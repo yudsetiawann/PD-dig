@@ -8,22 +8,44 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\MidtransController;
 use Illuminate\Support\Facades\Route;
 
-// Halaman Utama
+/*
+|--------------------------------------------------------------------------
+| Rute Publik (Bisa diakses Guest & User Belum Terverifikasi)
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-// Verify
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-// Event
 Route::get('/events', [EventController::class, 'index'])->name('events.index');
 Route::get('/events/{event:slug}', [EventController::class, 'show'])->name('events.show');
 
-// Rute yang Memerlukan Login
-Route::middleware('auth')->group(function () {
+/*
+|--------------------------------------------------------------------------
+| Rute Autentikasi Bawaan Breeze
+|--------------------------------------------------------------------------
+*/
+// Rute seperti login, register, forgot-password, dan halaman verifikasi email
+require __DIR__ . '/auth.php';
+
+/*
+|--------------------------------------------------------------------------
+| Rute yang Memerlukan Login & Verifikasi Email
+|--------------------------------------------------------------------------
+|
+| Middleware 'auth' memastikan user harus login.
+| Middleware 'verified' memastikan user harus sudah verifikasi email.
+| Jika belum verifikasi, user akan otomatis diarahkan ke halaman 'verify-email'.
+|
+*/
+Route::middleware(['auth', 'verified'])->group(function () {
+
+    // Rute Dashboard (Breeze)
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+
     // Profil (Breeze)
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -43,8 +65,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/tickets/{order}/cancel', [TicketController::class, 'cancel'])->name('tickets.cancel');
 });
 
-// Webhook Midtrans (Jangan di dalam middleware 'auth')
+/*
+|--------------------------------------------------------------------------
+| Rute Webhook (Publik & Tanpa CSRF)
+|--------------------------------------------------------------------------
+*/
 Route::post('/midtrans/notification', [MidtransController::class, 'notificationHandler'])->name('midtrans.notification');
-
-// Rute Autentikasi Breeze
-require __DIR__ . '/auth.php';
