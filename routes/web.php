@@ -45,7 +45,7 @@ require __DIR__ . '/auth.php';
 | Jika belum verifikasi, user akan otomatis diarahkan ke halaman 'verify-email'.
 |
 */
-Route::middleware(['verified'])->group(function () {
+// Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/dashboard', function () {
         return view('dashboard');
@@ -68,7 +68,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/my-receipts/{order}/show', [TicketController::class, 'show'])->name('tickets.show');
     Route::get('/my-receipts/{order}/get', [TicketController::class, 'download'])->name('tickets.download');
     Route::delete('/my-receipts/{order}/remove', [TicketController::class, 'cancel'])->name('tickets.cancel');
-});
+// });
 
 /*
 |--------------------------------------------------------------------------
