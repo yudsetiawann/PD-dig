@@ -22,8 +22,8 @@ return new class extends Migration
             $table->decimal('ticket_price', 12, 2);
             $table->integer('ticket_quota');
             $table->integer('ticket_sold')->default(0); // Default terjual 0
-            $table->timestamp('starts_at');
-            $table->timestamp('ends_at');
+            $table->timestamp('starts_at')->nullable();
+            $table->timestamp('ends_at')->nullable();
             $table->string('contact_person_name')->nullable();
             $table->string('contact_person_phone')->nullable();
             $table->timestamps();
