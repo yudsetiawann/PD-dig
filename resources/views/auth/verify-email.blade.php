@@ -15,7 +15,7 @@
     </div> --}}
 
     <!-- Judul -->
-    <h2 class="text-center text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+    <h2 class="-mt-6 text-center text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
       Verifikasi Email Anda
     </h2>
 
