@@ -1,65 +1,39 @@
-{{--
-  Redesain Navigasi Modern (Glassmorphism)
-  - Menggunakan Tailwind CSS & Alpine.js
-  - Tetap kompatibel dengan Laravel Blade
-  - Efek "glossy" saat di-scroll
-  - Menu mobile slide-out yang modern
+{{-- Redesain Navigasi Modern (Glassmorphism)
+- Menggunakan Tailwind CSS & Alpine.js
+- Tetap kompatibel dengan Laravel Blade
+- Efek "glossy" saat di-scroll
+- Menu mobile slide-out yang modern
 --}}
-<nav x-data="{
-    mobileOpen: false,
-    scrolled: false,
-    darkMode: localStorage.getItem('darkMode') === 'true' || (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
-    init() {
-        if (this.darkMode) {
-            document.documentElement.setAttribute('data-theme', 'dark');
-        } else {
-            document.documentElement.removeAttribute('data-theme');
-        }
-        this.$watch('darkMode', val => {
-            localStorage.setItem('darkMode', val);
-            if (val) {
-                document.documentElement.setAttribute('data-theme', 'dark');
-            } else {
-                document.documentElement.removeAttribute('data-theme');
-            }
-        });
-    }
-}" x-init="init()" class="fixed top-0 left-0 w-full z-50 transition-all duration-300"
+<nav x-data="{ mobileOpen: false, scrolled: false }" @scroll.window="scrolled = (window.scrollY > 10)"
+  class="fixed top-0 left-0 w-full z-50 transition-all duration-300"
   :class="{
       'bg-white/90 dark:bg-slate-900/90 shadow-lg backdrop-blur-lg': scrolled,
-      'bg-white/70 dark:bg-slate-900/70 backdrop-blur-lg border-b border-white/20 dark:border-slate-800/30': !scrolled
+      'bg-white/70 dark:bg-slate-900/70 backdrop-blur-lg border-b border-white/20 dark:border-slate-800/30':
+          !scrolled
   }">
-
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
     <div class="flex h-18 items-center justify-between">
-
       <!-- Logo & Navigasi Kiri -->
       <div class="flex items-center">
         <a href="/" class="flex items-center shrink-0 space-x-2.5 group">
           <img src="/img/Logo-PD.png" alt="geTix PD"
             class="h-10 w-auto transition-transform duration-300 group-hover:scale-110" />
           <span
-            class="text-lg font-semibold text-slate-800 dark:text-slate-100 transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">
-            geTix PD
-          </span>
+            class="text-lg font-semibold text-slate-800 dark:text-slate-100 transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">geTix
+            PD</span>
         </a>
 
         <!-- Menu Desktop -->
         <div class="hidden md:ml-10 md:block">
           <div class="flex items-baseline space-x-4">
             <a href="{{ route('home') }}"
-              class="{{ request()->routeIs('home') ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white' }} rounded-lg px-3 py-2 text-sm transition-colors duration-200">
-              Beranda
-            </a>
+              class="{{ request()->routeIs('home') ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white' }} rounded-lg px-3 py-2 text-sm transition-colors duration-200">Beranda</a>
             <a href="{{ route('events.index') }}"
-              class="{{ request()->routeIs('events.index') ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white' }} rounded-lg px-3 py-2 text-sm transition-colors duration-200">
-              Events
-            </a>
+              class="{{ request()->routeIs('events.index') ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white' }} rounded-lg px-3 py-2 text-sm transition-colors duration-200">Events</a>
             @auth
               <a href="{{ route('my-tickets.index') }}"
-                class="{{ request()->routeIs('my-tickets.index') ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white' }} rounded-lg px-3 py-2 text-sm transition-colors duration-200">
-                Tiket Saya
-              </a>
+                class="{{ request()->routeIs('my-tickets.index') ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white' }} rounded-lg px-3 py-2 text-sm transition-colors duration-200">Tiket
+                Saya</a>
             @endauth
           </div>
         </div>
@@ -67,7 +41,6 @@
 
       <!-- Menu Kanan (Desktop) -->
       <div class="hidden md:flex md:items-center md:space-x-2">
-
         <!-- Tombol Dark Mode -->
         <button @click="darkMode = !darkMode" type="button"
           class="relative flex items-center rounded-full p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200">
@@ -85,18 +58,12 @@
         </button>
 
         @auth
-          <!-- Dropdown User -->
           <div class="relative" x-data="{ open: false }">
             <button @click="open = !open"
               class="flex items-center space-x-2 rounded-full p-1 pr-3 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200">
-              <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white">
-                <span class="text-sm font-medium leading-none">
-                  {{ strtoupper(substr(Auth::user()->display_name, 0, 1)) }}
-                </span>
-              </span>
-              <span class="text-sm font-medium text-slate-700 dark:text-slate-200">
-                {{ Auth::user()->display_name }}
-              </span>
+              <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white"><span
+                  class="text-sm font-medium leading-none">{{ strtoupper(substr(Auth::user()->display_name, 0, 1)) }}</span></span>
+              <span class="text-sm font-medium text-slate-700 dark:text-slate-200">{{ Auth::user()->display_name }}</span>
               <svg class="size-4 text-slate-500 dark:text-slate-400 transition-transform duration-200"
                 :class="{ 'rotate-180': open }" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                 fill="currentColor">
@@ -106,10 +73,9 @@
               </svg>
             </button>
 
-            <!-- Panel Dropdown -->
+            {{-- Panel Dropown --}}
             <div x-cloak x-show="open" @click.outside="open = false" x-transition
               class="absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-xl bg-white dark:bg-slate-800 py-1.5 shadow-lg ring-1 ring-black/5 dark:ring-white/10 focus:outline-none">
-
               {{-- === LINK UNTUK ADMIN / SCANNER === --}}
               @if (Auth::user()->isAdmin())
                 <a href="{{ route('filament.admin.pages.dashboard') }}"
@@ -129,48 +95,32 @@
               @endif
               {{-- === AKHIR LINK ADMIN / SCANNER === --}}
 
-
-              <!-- Nav Links -->
               <a href="{{ route('home') }}"
-                class="{{ request()->routeIs('home') ? 'text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-200' }} block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-                Beranda
-              </a>
+                class="{{ request()->routeIs('home') ? 'text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-200' }} block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">Beranda</a>
               <a href="{{ route('events.index') }}"
-                class="{{ request()->routeIs('events.index') ? 'text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-200' }} block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-                Events
-              </a>
+                class="{{ request()->routeIs('events.index') ? 'text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-200' }} block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">Events</a>
               <a href="{{ route('my-tickets.index') }}"
-                class="{{ request()->routeIs('my-tickets.index') ? 'text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-200' }} block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-                Tiket Saya
-              </a>
+                class="{{ request()->routeIs('my-tickets.index') ? 'text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-200' }} block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">Tiket
+                Saya</a>
 
               <!-- Separator -->
               <div class="my-1.5 h-px bg-slate-200 dark:bg-slate-700"></div>
 
-              <!-- User Links -->
               <a href="{{ route('profile.edit') }}"
-                class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-                Profil Saya
-              </a>
+                class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">Profil
+                Saya</a>
               <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit"
-                  class="block w-full text-left px-4 py-2 text-sm text-red-500 dark:text-red-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-                  Keluar
-                </button>
+                  class="block w-full text-left px-4 py-2 text-sm text-red-500 dark:text-red-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">Keluar</button>
               </form>
             </div>
           </div>
         @else
-          <!-- Tombol Guest -->
           <a href="{{ route('login') }}"
-            class="hidden lg:inline-block rounded-lg px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors duration-200">
-            Masuk
-          </a>
+            class="hidden lg:inline-block rounded-lg px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors duration-200">Masuk</a>
           <a href="{{ route('register') }}"
-            class="inline-block rounded-lg bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md">
-            Daftar
-          </a>
+            class="inline-block rounded-lg bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md">Daftar</a>
         @endauth
       </div>
 
@@ -179,39 +129,30 @@
         <button @click="mobileOpen = !mobileOpen"
           class="relative inline-flex items-center justify-center rounded-md p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
           <span class="sr-only">Open main menu</span>
-          <!-- Ikon Hamburger -->
           <svg x-cloak x-show="!mobileOpen" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none"
             viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
           </svg>
-          <!-- Ikon Close (X) -->
           <svg x-cloak x-show="mobileOpen" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none"
             viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
-
     </div>
   </div>
 
-  <!-- ====== Menu Mobile (Slide-out Panel) ====== -->
-
-  <!-- Backdrop Overlay -->
+  <!-- MENU MOBILE -->
   <div x-cloak x-show="mobileOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0"
     x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200"
     x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @click="mobileOpen = false"
-    class="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm md:hidden">
-  </div>
+    class="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm md:hidden"></div>
 
-  <!-- Panel Menu -->
   <nav x-cloak x-show="mobileOpen" x-transition:enter="transition ease-out duration-300 transform"
     x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
     x-transition:leave="transition ease-in duration-200 transform" x-transition:leave-start="translate-x-0"
     x-transition:leave-end="translate-x-full"
     class="fixed top-0 right-0 h-full w-full max-w-xs z-50 bg-white dark:bg-slate-900 shadow-xl md:hidden flex flex-col">
-
-    <!-- Header Panel -->
     <div class="flex items-center justify-between p-4 border-b dark:border-slate-700/50">
       <a href="/" class="flex items-center shrink-0 space-x-2.5">
         <img src="/img/Logo-PD.png" alt="geTix PD" class="h-9 w-auto" />
@@ -227,87 +168,71 @@
       </button>
     </div>
 
-    <!-- Konten Panel (Navigasi) -->
-    <div class="flex-1 overflow-y-auto p-4 space-y-2">
-      <a href="{{ route('home') }}"
-        class="{{ request()->routeIs('home') ? 'bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' }} block rounded-lg px-3 py-2.5 text-base font-medium transition-colors">
-        Beranda
-      </a>
-      <a href="{{ route('events.index') }}"
-        class="{{ request()->routeIs('events.index') ? 'bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' }} block rounded-lg px-3 py-2.5 text-base font-medium transition-colors">
-        Events
-      </a>
-      @auth
-        <a href="{{ route('my-tickets.index') }}"
-          class="{{ request()->routeIs('my-tickets.index') ? 'bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' }} block rounded-lg px-3 py-2.5 text-base font-medium transition-colors">
-          Tiket Saya
-        </a>
-      @endauth
-    </div>
+    <div class="p-4 bg-white/90 dark:bg-slate-900/90 shadow-xl backdrop-blur-lg space-y-4 rounded-md">
+      <div class="flex-1 overflow-y-auto">
+        <nav class="space-y-2">
+          <a href="{{ route('home') }}"
+            class="{{ request()->routeIs('home') ? 'bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' }} block rounded-lg px-3 py-2.5 text-base font-medium transition-colors">Beranda</a>
+          <a href="{{ route('events.index') }}"
+            class="{{ request()->routeIs('events.index') ? 'bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' }} block rounded-lg px-3 py-2.5 text-base font-medium transition-colors">Events</a>
+          @auth
+            <a href="{{ route('my-tickets.index') }}"
+              class="{{ request()->routeIs('my-tickets.index') ? 'bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' }} block rounded-lg px-3 py-2.5 text-base font-medium transition-colors">Tiket
+              Saya</a>
+          @endauth
+        </nav>
+      </div>
 
-    <!-- Footer Panel (User/Guest & Dark Mode) -->
-    <div class="p-4 border-t dark:border-slate-700/50 space-y-4">
       @auth
-        <!-- Info User -->
         <div class="flex items-center space-x-3">
           <div class="shrink-0">
             <span
               class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white ring-1 ring-white/10">
-              <span class="text-base font-medium leading-none">
-                {{ strtoupper(substr(Auth::user()->display_name, 0, 1)) }}
-              </span>
+              <span
+                class="text-base font-medium leading-none">{{ strtoupper(substr(Auth::user()->display_name, 0, 1)) }}</span>
             </span>
           </div>
           <div class="min-w-0 flex-1">
             <div class="text-base font-medium text-slate-800 dark:text-white truncate">{{ Auth::user()->name }}</div>
-            <div class="text-sm font-medium text-slate-500 dark:text-gray-400 truncate">{{ Auth::user()->email }}
-            </div>
+            <div class="text-sm font-medium text-slate-500 dark:text-gray-400 truncate">{{ Auth::user()->email }}</div>
           </div>
         </div>
 
         {{-- === LINK UNTUK ADMIN / SCANNER (MOBILE) === --}}
-        @if (Auth::user()->isAdmin())
-          <a href="{{ route('filament.admin.pages.dashboard') }}"
-            class="block w-full text-center rounded-lg px-3 py-2.5 text-base font-medium text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/30 hover:bg-yellow-100 dark:hover:bg-yellow-900/50 transition-colors">
-            Panel Admin
-          </a>
-        @elseif (Auth::user()->isScanner())
-          <a href="{{ route('filament.admin.pages.scan-ticket') }}"
-            class="block w-full text-center rounded-lg px-3 py-2.5 text-base font-medium text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/30 hover:bg-yellow-100 dark:hover:bg-yellow-900/50 transition-colors">
-            Panel Scanner
-          </a>
-        @endif
-        {{-- === AKHIR LINK ADMIN / SCANNER (MOBILE) === --}}
-
-        <!-- Link User -->
         <div class="space-y-2">
+          @if (Auth::user()->isAdmin())
+            <a href="{{ route('filament.admin.pages.dashboard') }}"
+              class="block w-full text-center rounded-lg px-3 py-2.5 text-base font-medium text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/30 hover:bg-yellow-100 dark:hover:bg-yellow-900/50 transition-colors">
+              Panel Admin
+            </a>
+          @elseif (Auth::user()->isScanner())
+            <a href="{{ route('filament.admin.pages.scan-ticket') }}"
+              class="block w-full text-center rounded-lg px-3 py-2.5 text-base font-medium text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/30 hover:bg-yellow-100 dark:hover:bg-yellow-900/50 transition-colors">
+              Panel Scanner
+            </a>
+          @endif
+          {{-- === AKHIR LINK ADMIN / SCANNER (MOBILE) === --}}
+
+          {{-- Link User --}}
           <a href="{{ route('profile.edit') }}"
-            class="block w-full text-center rounded-lg px-3 py-2.5 text-base font-medium text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-            Profil Saya
-          </a>
+            class="block w-full text-center rounded-lg px-3 py-2.5 text-base font-medium text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">Profil
+            Saya</a>
           <form method="POST" action="{{ route('logout') }}">
             @csrf
             <button type="submit"
-              class="block w-full text-center rounded-lg px-3 py-2.5 text-base font-medium text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors">
-              Keluar
-            </button>
+              class="block w-full text-center rounded-lg px-3 py-2.5 text-base font-medium text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors">Keluar</button>
           </form>
         </div>
       @else
-        <!-- Tombol Guest -->
         <div class="space-y-2">
           <a href="{{ route('login') }}"
-            class="block w-full text-center rounded-lg bg-blue-600 hover:bg-blue-700 text-white py-2.5 px-4 text-base font-medium transition-all duration-200 shadow-sm hover:shadow-md">
-            Masuk
-          </a>
+            class="block w-full text-center rounded-lg bg-blue-600 hover:bg-blue-700 text-white py-2.5 px-4 text-base font-medium transition-all duration-200 shadow-sm hover:shadow-md">Masuk</a>
           <a href="{{ route('register') }}"
-            class="block w-full text-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 py-2.5 px-4 text-base font-medium transition-colors duration-200">
-            Daftar
-          </a>
+            class="block w-full text-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 py-2.5 px-4 text-base font-medium transition-colors duration-200">Daftar</a>
         </div>
+
       @endauth
 
-      <!-- Tombol Dark Mode Mobile -->
       <button @click="darkMode = !darkMode" type="button"
         class="w-full flex items-center justify-center space-x-2 rounded-lg py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
         <svg x-cloak x-show="!darkMode" class="size-5" xmlns="http://www.w3.org/2000/svg" fill="none"
