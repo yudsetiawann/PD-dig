@@ -10,7 +10,6 @@
     <div class="mx-auto max-w-lg">
 
       {{-- NOTIFIKASI (Pengganti Alert) --}}
-
       <!-- 1. Pesan Sukses (Hidden by default) -->
       <div id="status-success" style="display: none;"
         class="mb-6 rounded-xl border border-green-200 bg-green-50 p-5 dark:border-green-800 dark:bg-green-900/50">
