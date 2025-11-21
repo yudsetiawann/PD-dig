@@ -6,19 +6,20 @@ use Filament\Panel;
 use App\Models\User;
 use Filament\PanelProvider;
 use Filament\Pages\Dashboard;
+use Filament\Navigation\MenuItem;
 use Filament\Support\Colors\Color;
 use Illuminate\Support\HtmlString;
 use Filament\Widgets\AccountWidget;
+use App\Filament\Widgets\SalesChart;
 use Illuminate\Support\Facades\Auth;
 use Filament\Navigation\NavigationItem;
-use Filament\Widgets\FilamentInfoWidget;
-use Filament\Http\Middleware\Authenticate;
 
 // --- TAMBAHKAN USE STATEMENT UNTUK WIDGET BARU ---
-use App\Filament\Widgets\SalesStatsOverview;
-use App\Filament\Widgets\SalesChart;
+use Filament\Widgets\FilamentInfoWidget;
 use App\Filament\Widgets\EventSalesTable;
+use Filament\Http\Middleware\Authenticate;
 
+use App\Filament\Widgets\SalesStatsOverview;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -42,10 +43,27 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogo(new HtmlString(view('filament.app-logo')->render()))
             ->brandName('E-Tick PD')
             ->favicon(asset('img/Icon-PD.png'))
+            // ->topNavigation()
+            // --- PERUBAHAN DI SINI (USER MENU) ---
+            ->userMenuItems([
+                MenuItem::make()
+                    ->label('Edit Profil')
+                    ->url(fn(): string => route('profile.edit')) // Arahkan ke route Breeze
+                    ->icon('heroicon-o-user-circle'),
+                // Menu 'Settings' sudah dihapus
+            ])
+            // -------------------------------------
             ->globalSearch(false)
             ->colors([
                 'primary' => Color::Amber,
+                // 'primary' => Color::Red,
+                'gray' => Color::Slate,
+                'info' => Color::Blue,
+                'success' => Color::Green,
+                // 'warning' => Color::Amber,
+                'danger' => Color::Rose,
             ])
+            ->sidebarCollapsibleOnDesktop()
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([

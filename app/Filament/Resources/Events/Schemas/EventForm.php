@@ -7,15 +7,16 @@ use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Group;
-use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\RichEditor;
+use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 
 class EventForm
@@ -23,121 +24,124 @@ class EventForm
     public static function configure(Schema $schema): Schema
     {
         return $schema->schema([
-            // Grup untuk kolom utama (2/3 dari lebar)
-            Group::make()
+            // KOLOM KIRI (Main Content)
+            Section::make('Informasi Utama')
+                ->description('Masukkan detail dasar mengenai event.')
+                ->icon('heroicon-o-information-circle') // Untuk Section, 'icon' BENAR
                 ->schema([
                     TextInput::make('title')
+                        ->label('Judul Event')
                         ->required()
                         ->live(onBlur: true)
-                        ->afterStateUpdated(fn(string $operation, $state, Set $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null),
+                        ->afterStateUpdated(fn(string $operation, $state, Set $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null)
+                        ->columnSpanFull(),
 
                     TextInput::make('slug')
                         ->required()
-                        ->unique(ignoreRecord: true),
-
-                    Textarea::make('description')
-                        ->label('Deskripsi Lengkap Event')
-                        ->rows(8)
+                        ->unique(ignoreRecord: true)
+                        ->prefix(url('/event/') . '/')
                         ->columnSpanFull(),
 
-                    SpatieMediaLibraryFileUpload::make('thumbnail')
-                        ->collection('thumbnails')
-                        ->image()
-                        ->imageEditor()
-                        ->required()
-                        ->columnSpanFull(),
-
-                    SpatieMediaLibraryFileUpload::make('gallery')
-                        ->collection('gallery')
-                        ->multiple()
-                        ->reorderable()
-                        ->image()
-                        ->imageEditor()
+                    RichEditor::make('description')
+                        ->label('Deskripsi Lengkap')
                         ->columnSpanFull(),
                 ])
                 ->columnSpan(2),
 
-            // Grup untuk kolom samping (1/3 dari lebar)
+            // KOLOM KANAN (Sidebar / Settings)
             Group::make()
                 ->schema([
-                    Select::make('event_type')
-                        ->label('Tipe Event')
-                        ->options([
-                            'ujian' => 'Ujian Kenaikan Tingkat',
-                            'pertandingan' => 'Pertandingan',
-                            'lainnya' => 'Lainnya',
-                        ])
-                        ->default('ujian')
-                        ->required()
-                        ->live(), // agar form bereaksi
+                    // Section Media
+                    Section::make('Media')
+                        ->collapsible()
+                        ->schema([
+                            SpatieMediaLibraryFileUpload::make('thumbnail')
+                                ->collection('thumbnails')
+                                ->image()
+                                ->imageEditor()
+                                ->required(),
 
-                    TextInput::make('location')->required(),
+                            SpatieMediaLibraryFileUpload::make('gallery')
+                                ->collection('gallery')
+                                ->multiple()
+                                ->reorderable()
+                                ->image()
+                                ->imageEditor(),
+                        ]),
 
-                    TextInput::make('location_map_link')
-                        ->label('Link Embed Google Maps')
-                        ->placeholder('Contoh: https://www.google.com/maps/embed?pb=...')
-                        ->url(),
+                    // Section Detail & Waktu
+                    Section::make('Detail & Waktu')
+                        ->schema([
+                            Select::make('event_type')
+                                ->label('Tipe Event')
+                                ->options([
+                                    'ujian' => 'Ujian Kenaikan Tingkat',
+                                    'pertandingan' => 'Pertandingan',
+                                    'lainnya' => 'Lainnya',
+                                ])
+                                ->default('ujian')
+                                ->required()
+                                ->native(false),
 
-                    DatePicker::make('starts_at')
-                        ->required()
-                        ->label('Tanggal Mulai')
-                        ->native(false),
+                            TextInput::make('location')
+                                ->label('Lokasi')
+                                ->prefixIcon('heroicon-m-map-pin') // PERBAIKAN: Gunakan prefixIcon
+                                ->required(),
 
-                    DatePicker::make('ends_at')
-                        ->label('Tanggal Selesai')
-                        ->after('starts_at')
-                        ->native(false),
+                            DatePicker::make('starts_at')
+                                ->label('Mulai')
+                                ->required()
+                                ->native(false)
+                                ->prefixIcon('heroicon-m-calendar-days'), // PERBAIKAN: Gunakan prefixIcon
 
-                    // --- TOGGLE PERUBAHAN HARGA STATIS/DINAMIS ---
-                    Toggle::make('has_dynamic_pricing')
-                        ->label('Gunakan Harga Dinamis?')
-                        ->live()
-                        ->columnSpanFull(),
+                            DatePicker::make('ends_at')
+                                ->label('Selesai')
+                                ->after('starts_at')
+                                ->native(false)
+                                ->prefixIcon('heroicon-m-calendar-days'), // PERBAIKAN: Gunakan prefixIcon
+                        ]),
 
-                    // Harga Tunggal (muncul jika toggle OFF)
-                    TextInput::make('ticket_price')
-                        ->label('Harga Tiket (Tunggal)')
-                        ->numeric()->prefix('Rp')
-                        ->required()
-                        ->visible(fn(Get $get): bool => !$get('has_dynamic_pricing'))
-                        ->default(0)
-                        ->dehydrated(true),
+                    // Section Harga & Kuota
+                    Section::make('Konfigurasi Tiket')
+                        ->schema([
+                            Toggle::make('has_dynamic_pricing')
+                                ->label('Aktifkan Harga Bertingkat')
+                                ->onColor('success')
+                                ->offColor('gray')
+                                ->live(),
 
-                    // --- HARGA DINAMIS ---
-                    KeyValue::make('level_prices')
-                        ->label('Harga Dinamis')
-                        ->keyLabel('Tingkatan/Kategori') // Label lebih umum
-                        ->valueLabel('Harga')
-                        ->helperText('Masukkan hanya angka, misal: 50000')
-                        ->required()
-                        ->visible(fn(Get $get): bool => $get('has_dynamic_pricing'))
-                        ->columnSpanFull()
-                        // Helper text dinamis berdasarkan tipe event
-                        ->helperText(function (Get $get): string {
-                            if ($get('event_type') === 'ujian') {
-                                return 'Untuk Ujian: Gunakan key seperti pemula_dasar2, cakel_putih, putihhijau_hijau.';
-                            } elseif ($get('event_type') === 'pertandingan') {
-                                return 'Untuk Pertandingan: Gunakan key seperti tanding, tgr, serang_hindar.';
-                            }
-                            return 'Masukkan key harga yang sesuai.';
-                        }),
-                    // --- AKHIR HARGA DINAMIS ---
+                            TextInput::make('ticket_price')
+                                ->label('Harga Tiket')
+                                ->numeric()
+                                ->prefix('Rp')
+                                ->visible(fn(Get $get): bool => !$get('has_dynamic_pricing')),
 
-                    TextInput::make('ticket_quota')
-                        ->label('Kuota Tiket')
-                        ->numeric()->required(),
+                            KeyValue::make('level_prices')
+                                ->label('Daftar Harga')
+                                ->keyLabel('Kategori')
+                                ->valueLabel('Harga')
+                                ->visible(fn(Get $get): bool => $get('has_dynamic_pricing')),
 
-                    TextInput::make('ticket_sold')
-                        ->label('Tiket Terjual')
-                        ->disabled()
-                        ->dehydrated(false),
+                            TextInput::make('ticket_quota')
+                                ->label('Total Kuota')
+                                ->numeric()
+                                ->suffix('Pax')
+                                ->required(),
+                        ]),
 
-                    TextInput::make('contact_person_name')
-                        ->label('Nama Narahubung'),
-
-                    TextInput::make('contact_person_phone')
-                        ->label('No. Telepon Narahubung')
-                        ->tel(),
+                    // Fieldset untuk Kontak
+                    Fieldset::make('Narahubung')
+                        ->schema([
+                            TextInput::make('contact_person_name')
+                                ->label('Nama')
+                                ->prefixIcon('heroicon-m-user') // PERBAIKAN: Tambahan icon user
+                                ->placeholder('Budi Santoso'),
+                            TextInput::make('contact_person_phone')
+                                ->label('WhatsApp')
+                                ->tel()
+                                ->prefixIcon('heroicon-m-phone') // PERBAIKAN: Tambahan icon phone
+                                ->prefix('+62'), // Prefix teks tetap boleh digabung dengan prefixIcon
+                        ])->columns(1),
 
                     Hidden::make('user_id')->default(fn() => Auth::id()),
                 ])

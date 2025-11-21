@@ -104,4 +104,11 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
             }
         );
     }
+
+    public function getFilamentName(): string
+    {
+        // Ini akan menampilkan nama lengkap. 
+        // Jika ingin huruf kapital semua: return strtoupper($this->name);
+        return $this->name;
+    }
 }
