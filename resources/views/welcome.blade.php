@@ -117,12 +117,12 @@
     </div>
   </section>
 
-  <!-- ====== Section "Kenapa Memilih E-Tick PD?" ====== -->
+  <!-- ====== Section "Kenapa Memilih geTix PD?" ====== -->
   <section class="py-16 sm:py-24 bg-slate-50 dark:bg-slate-950">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
       <div class="max-w-3xl mx-auto text-center mb-16">
         <h2 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
-          Kenapa Memilih E-Tick PD?
+          Kenapa Memilih geTix PD?
         </h2>
         <p class="mt-4 text-lg text-slate-600 dark:text-slate-400">
           Kami memberikan kemudahan, keamanan, dan keabsahan tiket dalam satu platform.
