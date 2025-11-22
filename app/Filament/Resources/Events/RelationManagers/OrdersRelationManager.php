@@ -9,21 +9,17 @@ use Filament\Schemas\Schema;
 use Filament\Actions\EditAction;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\ExportAction;
 use Filament\Tables\Filters\Filter;
-use Filament\Actions\AssociateAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\DissociateAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
-use Filament\Actions\DissociateBulkAction;
-use Filament\Actions\Exports\Models\Export;
 use Filament\Resources\RelationManagers\RelationManager;
-use Maatwebsite\Excel\Facades\Excel; // Import Fassad Excel
-use App\Exports\OrdersExport; // Import class Exporter baru Anda
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\OrdersExport;
+use Filament\Support\Enums\FontWeight; // Jangan lupa import ini
 
 class OrdersRelationManager extends RelationManager
 {
@@ -48,59 +44,69 @@ class OrdersRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('order_code')
             ->columns([
-                TextColumn::make('order_code')
-                    ->label('Kode Order')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true), // Sembunyikan default (selalu 1)
-
+                // 1. Kolom Nama digabung dengan Kode Order (Modern Look)
                 TextColumn::make('customer_name')
                     ->label('Nama Peserta')
-                    ->searchable()
+                    ->weight(FontWeight::Bold) // Nama dipertebal
+                    ->icon('heroicon-m-user')
+                    ->description(fn(Order $record) => $record->order_code) // Kode order jadi sub-text
+                    ->searchable(['customer_name', 'order_code']) // Bisa cari nama atau kode
                     ->sortable(),
 
-                // --- KOLOM BARU / DIPERBARUI ---
+                // 2. Kolom Sekolah dengan Icon
                 TextColumn::make('school')
                     ->label('Ranting/Sekolah')
+                    ->icon('heroicon-m-building-library')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->wrap(),
 
+                // 3. Level dengan Warna Warni (Konsisten dengan ParticipantsTable)
                 TextColumn::make('level')
-                    // Label dinamis berdasarkan tipe event
                     ->label($eventType === 'ujian' ? 'Tingkatan' : 'Tingkat')
+                    ->badge()
+                    ->color(fn(string $state): string => match ($state) {
+                        'Hijau', 'Putih Hijau', 'Hijau Biru' => 'success', // Warna Hijau
+                        'Biru' => 'info',    // Warna Biru
+                        'Cakel' => 'warning', // Warna Kuning
+                        'Pemula', 'Dasar I', 'Dasar II' => 'gray', // Warna Abu
+                        default => 'primary',
+                    })
                     ->searchable()
                     ->sortable(),
 
+                // 4. Status Bayar dengan Icon & Warna
                 TextColumn::make('status')
                     ->label('Status Bayar')
                     ->badge()
+                    ->formatStateUsing(fn(string $state): string => ucfirst($state))
                     ->colors([
                         'success' => 'paid',
                         'warning' => 'pending',
                         'danger' => fn($state) => in_array($state, ['failed', 'expired']),
                     ])
+                    ->icons([
+                        'heroicon-m-check-badge' => 'paid',
+                        'heroicon-m-clock' => 'pending',
+                        'heroicon-m-x-circle' => ['failed', 'expired'],
+                    ])
                     ->sortable(),
 
-                TextColumn::make('quantity')
-                    ->label('Tiket')
-                    ->numeric()
-                    ->toggleable(isToggledHiddenByDefault: true),
-
+                // 5. Harga
                 TextColumn::make('total_price')
-                    ->label('Total Bayar')
+                    ->label('Total')
                     ->money('IDR')
+                    ->weight(FontWeight::Bold)
                     ->sortable(),
 
+                // 6. Waktu Check-in (Penting untuk panitia)
                 TextColumn::make('checked_in_at')
-                    ->label('Waktu Check-in')
-                    ->dateTime('d M Y H:i')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-
-                TextColumn::make('created_at')
-                    ->label('Tanggal Pesan')
-                    ->dateTime('d M Y H:i')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->label('Check-in')
+                    ->dateTime('d M H:i')
+                    ->placeholder('Belum Hadir') // Teks jika kosong
+                    ->badge() // Tampil sebagai badge agar menonjol
+                    ->color(fn($state) => $state ? 'success' : 'gray')
+                    ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('status')
@@ -110,27 +116,27 @@ class OrdersRelationManager extends RelationManager
                         'paid' => 'Lunas (Paid)',
                         'failed' => 'Gagal (Failed)',
                         'expired' => 'Kedaluwarsa (Expired)',
-                    ]),
+                    ])
+                    ->native(false),
 
-                // Filter Tingkatan
                 SelectFilter::make('level')
                     ->label($eventType === 'ujian' ? 'Tingkatan' : 'Tingkat')
                     ->options(function () {
-                        // Ambil opsi unik dari order yang ada untuk event ini saja
                         return Order::where('event_id', $this->getOwnerRecord()->id)
                             ->select('level')
                             ->distinct()
-                            ->whereNotNull('level') // Abaikan jika null
-                            ->pluck('level', 'level') // value => label
+                            ->whereNotNull('level')
+                            ->pluck('level', 'level')
                             ->toArray();
-                    }),
+                    })
+                    ->native(false),
 
-                // Filter berdasarkan Ranting/Sekolah (menggunakan input teks)
                 Filter::make('school')
                     ->label('Ranting/Sekolah')
                     ->schema([
                         TextInput::make('school_name')
-                            ->label('Cari Ranting/Sekolah'),
+                            ->label('Cari Ranting/Sekolah')
+                            ->prefixIcon('heroicon-m-magnifying-glass'),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -141,34 +147,25 @@ class OrdersRelationManager extends RelationManager
                     }),
             ])
             ->headerActions([
-                // CreateAction::make(),
-                // AssociateAction::make(),
-                // --- TAMBAHKAN TOMBOL EKSPOR DI SINI ---
                 Action::make('export')
-                    ->label('Ekspor Data Peserta (XLSX)')
+                    ->label('Ekspor Data (XLSX)')
                     ->color('success')
                     ->icon('heroicon-o-document-arrow-down')
                     ->action(function () {
-                        // Ambil ID event saat ini
                         $eventId = $this->getOwnerRecord()->id;
-                        $eventSlug = $this->getOwnerRecord()->slug;
-                        $fileName = 'data-peserta-' . $eventSlug . '-' . now()->format('Y-m-d') . '.xlsx';
+                        $eventSlug = $this->getOwnerRecord()->slug ?? 'event';
+                        $fileName = 'Peserta-' . $eventSlug . '-' . now()->format('d-m-Y') . '.xlsx';
 
-                        // Panggil Maatwebsite/Excel secara langsung
-                        // Ini akan memicu download langsung di browser
                         return Excel::download(new OrdersExport($eventId), $fileName);
-                    }), // Atur nama file
+                    }),
             ])
             ->recordActions([
-                EditAction::make(),
-                DissociateAction::make(),
-                DeleteAction::make(),
+                EditAction::make()->iconButton(), // Ubah jadi tombol icon agar ringkas
+                DeleteAction::make()->iconButton(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DissociateBulkAction::make(),
                     DeleteBulkAction::make(),
-                    BulkActionGroup::make([]),
                 ]),
             ]);
     }
