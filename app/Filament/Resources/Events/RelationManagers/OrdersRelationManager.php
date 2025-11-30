@@ -6,19 +6,20 @@ use App\Models\Order;
 use Filament\Tables\Table;
 use Filament\Actions\Action;
 use Filament\Schemas\Schema;
+use App\Exports\OrdersExport;
 use Filament\Actions\EditAction;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Tables\Filters\Filter;
+use Maatwebsite\Excel\Facades\Excel;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Columns\TextInputColumn;
 use Filament\Resources\RelationManagers\RelationManager;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\OrdersExport;
 use Filament\Support\Enums\FontWeight; // Jangan lupa import ini
 
 class OrdersRelationManager extends RelationManager
@@ -92,7 +93,15 @@ class OrdersRelationManager extends RelationManager
                     ])
                     ->sortable(),
 
-                // 5. Harga
+                // 5. Sertifikat
+                TextColumn::make('customer_name')->searchable(),
+
+                // Admin bisa langsung ketik prestasi di tabel
+                TextInputColumn::make('achievement')
+                    ->label('Prestasi / Juara')
+                    ->placeholder('Peserta'),
+
+                // 6. Harga
                 TextColumn::make('total_price')
                     ->label('Total')
                     ->money('IDR')

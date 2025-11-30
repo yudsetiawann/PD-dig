@@ -13,6 +13,7 @@ use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Utilities\Get;
@@ -99,6 +100,51 @@ class EventForm
                                 ->after('starts_at')
                                 ->native(false)
                                 ->prefixIcon('heroicon-m-calendar-days'), // PERBAIKAN: Gunakan prefixIcon
+                        ]),
+
+                    Section::make('Pengaturan Sertifikat')
+                        ->schema([
+                            FileUpload::make('certificate_template')
+                                ->label('Template Sertifikat (Gambar Kosong)')
+                                ->image()
+                                ->disk('public')        // <--- WAJIB DITAMBAHKAN: Agar masuk ke storage/app/public
+                                ->directory('certificates')
+                                ->visibility('public')  // <--- OPSIONAL: Menastikan file permission-nya public
+                                ->columnSpanFull(),
+
+
+                            Toggle::make('is_certificate_published')
+                                ->label('Terbitkan Sertifikat (Buka Akses Download)')
+                                ->inline(false),
+
+                            // --- TAMBAHKAN BAGIAN INI ---
+                            Select::make('certificate_settings.orientation')
+                                ->label('Orientasi Kertas')
+                                ->options([
+                                    'landscape' => 'Landscape (Melebar)',
+                                    'portrait' => 'Portrait (Tegak)',
+                                ])
+                                ->default('landscape')
+                                ->required()
+                                ->selectablePlaceholder(false),
+                            // ----------------------------
+
+                            // Pengaturan posisi teks (Anggap saja layoutnya center, kita cuma butuh atur posisi vertikal/Y)
+                            Group::make()->schema([
+                                TextInput::make('certificate_settings.name_top_margin')
+                                    ->label('Jarak Nama dari Atas (px)')
+                                    ->numeric()
+                                    ->default(300),
+
+                                TextInput::make('certificate_settings.status_top_margin')
+                                    ->label('Jarak Status dari Atas (px)')
+                                    ->numeric()
+                                    ->default(450),
+
+                                TextInput::make('certificate_settings.font_color')
+                                    ->label('Warna Teks (Hex)')
+                                    ->default('#000000'),
+                            ])->columns(3),
                         ]),
 
                     // Section Harga & Kuota

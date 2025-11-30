@@ -28,6 +28,9 @@ class Event extends Model implements HasMedia
         'ends_at',
         'contact_person_name',
         'contact_person_phone',
+        'certificate_template',     // <-- Baru
+        'certificate_settings',     // <-- Baru
+        'is_certificate_published', // <-- Baru
     ];
 
     protected $casts = [
@@ -35,6 +38,8 @@ class Event extends Model implements HasMedia
         'ends_at' => 'datetime',
         'has_dynamic_pricing' => 'boolean',
         'level_prices' => 'array',
+        'certificate_settings' => 'array',    // <-- Baru (Cast JSON ke Array)
+        'is_certificate_published' => 'boolean', // <-- Baru (Cast Tinyint ke Boolean)
     ];
 
     // Relasi ke User (pembuat event)
