@@ -92,22 +92,39 @@
     </div>
 
     {{-- Garis Pemisah & Copyright --}}
-    <div
-      class="border-t border-slate-200 dark:border-slate-800 pt-6 flex flex-col md:flex-row justify-between items-center gap-2">
+    {{-- Footer dengan Info Kontak --}}
+    <div class="mt-12 -mb-6 md:-mb-8 border-t border-slate-200 py-4 text-center dark:border-slate-700">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 ">
+        <div class="md:flex md:items-center md:justify-between">
 
-      {{-- Copyright --}}
-      <p class="text-sm text-slate-500 dark:text-slate-500 text-center md:text-left">
-        &copy; {{ date('Y') }} geTix PD. All rights reserved.
-      </p>
+          {{-- Bagian Kiri: Ajakan Kontak --}}
+          <div class="flex justify-center md:order-2 md:justify-end">
+            <a href="https://instagram.com/yudstwan_" target="_blank" rel="noopener noreferrer"
+              class="group flex items-center gap-x-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-900/10 transition-all hover:bg-white hover:text-pink-600 hover:ring-pink-600 dark:bg-slate-800 dark:text-slate-300 dark:ring-white/10 dark:hover:bg-slate-800 dark:hover:text-pink-500 dark:hover:ring-pink-500">
+              {{-- Icon Instagram --}}
+              <svg
+                class="size-4 text-slate-400 transition-colors group-hover:text-pink-600 dark:text-slate-500 dark:group-hover:text-pink-500"
+                fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill-rule="evenodd"
+                  d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772 4.902 4.902 0 011.772-1.153c.636-.247 1.363-.416 2.427-.465 1.067-.047 1.409-.06 3.809-.06h.63zm1.44 5a5 5 0 100 10 5 5 0 000-10zm-6.397 9.5a2.5 2.5 0 115 0 2.5 2.5 0 01-5 0zm6.397-9.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5z"
+                  clip-rule="evenodd" />
+              </svg>
+              <span>Butuh Bantuan? Hubungi Developer</span>
+            </a>
+          </div>
 
-      {{-- Created By (Permintaan Anda) --}}
-      {{-- <p class="text-sm text-slate-500 dark:text-slate-500 flex items-center gap-1">
-        Created by
-        <a href="https://www.instagram.com/yudstwan_" target="_blank"
-          class="font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-          @yudstwan_
-        </a>
-      </p> --}}
+          {{-- Bagian Kanan: Copyright --}}
+          <div class="mt-4 md:order-1 md:mt-0">
+            <p class="text-center text-xs leading-5 text-slate-500 dark:text-slate-400 md:text-left">
+              &copy; {{ date('Y') }} Perisai Diri Kab. Tasikmalaya. All rights reserved.
+              {{-- <span class="block sm:inline">Created by <a href="https://instagram.com/yudstwan_" target="_blank"
+                  class="font-medium text-slate-700 dark:text-slate-300">@yudstwan_</a></span> --}}
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
+
+
 </footer>
