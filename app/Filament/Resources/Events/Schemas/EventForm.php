@@ -107,9 +107,7 @@ class EventForm
                             FileUpload::make('certificate_template')
                                 ->label('Template Sertifikat (Gambar Kosong)')
                                 ->image()
-                                ->disk('public')        // <--- WAJIB DITAMBAHKAN: Agar masuk ke storage/app/public
-                                ->directory('certificates')
-                                ->visibility('public')  // <--- OPSIONAL: Menastikan file permission-nya public
+                                ->directory('certificates') // Folder penyimpanan di dalam disk
                                 ->columnSpanFull(),
 
 
