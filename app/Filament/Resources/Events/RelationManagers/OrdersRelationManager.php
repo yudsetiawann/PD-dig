@@ -235,7 +235,26 @@ class OrdersRelationManager extends RelationManager
                             ->success()
                             ->send();
                     })->visible(fn() => $this->getOwnerRecord()->event_type === 'ujian'),
-                // --- AKHIR KODE BARU ---
+            // --- AKHIR KODE BARU ---
+
+            Action::make('mark_paid_offline')
+                ->label('Konfirmasi Tunai')
+                ->icon('heroicon-m-banknotes')
+                ->color('success')
+                ->requiresConfirmation()
+                ->modalHeading('Konfirmasi Pembayaran Tunai')
+                ->modalDescription('Pastikan uang sudah diterima. Tiket akan dikirim ke user.')
+                ->visible(fn(Order $record) => $record->status === 'pending')
+                ->action(function (Order $record) {
+                    // 1. Update Status
+                    $record->update(['status' => 'paid']);
+
+                    // 2. Generate Tiket (Panggil logika yang sama dengan MidtransController)
+                    // Saran: Pindahkan logika generate PDF+Email ke Service terpisah (misal: TicketService)
+                    // app(TicketService::class)->generateAndSend($record);
+
+                    Notification::make()->title('Pembayaran Dikonfirmasi')->success()->send();
+                }),
                 // EditAction::make()->iconButton(),
                 DeleteAction::make()->iconButton(),
             ])
