@@ -26,6 +26,8 @@
   {{-- ========================================= --}}
 
   @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+  @livewireStyles
 </head>
 
 {{-- === 2. PINDAHKAN LOGIKA ALPINE KE BODY === --}}
@@ -43,8 +45,7 @@
             }
         });
     }
-}"
-  x-init="init()">
+}" x-init="init()">
 
   <div class="min-h-full">
     {{-- Navbar sekarang akan otomatis membaca state 'darkMode' dari body --}}
@@ -65,6 +66,8 @@
     </main>
     <x-footer />
   </div>
+
+  @livewireScripts
 </body>
 
 </html>
