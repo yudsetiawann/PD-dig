@@ -1,5 +1,45 @@
 <header x-data="{ mobileOpen: false, scrolled: false }" @scroll.window="scrolled = (window.scrollY > 10)">
 
+  {{-- CHECK VERIFICATION STATUS LOGIC (FIXED) --}}
+  {{-- @php
+    $isUserVerified = false;
+
+    if (Auth::check()) {
+        $u = Auth::user();
+
+        // 1. Logika Pelatih: Terverifikasi jika sudah memilih Unit Binaan
+        if ($u->isCoach()) {
+            if ($u->coachedUnits->isNotEmpty()) {
+                $isUserVerified = true;
+            }
+        }
+        // 2. Logika Atlit/User: Terverifikasi jika status di database 'approved'
+        // Kita cek langsung ke kolom 'verification_status' di tabel users
+        else {
+            if ($u->verification_status === 'approved') {
+                $isUserVerified = true;
+            }
+        }
+    }
+  @endphp --}}
+  @php
+    $user = Auth::user();
+    $isUserVerified = false;
+
+    if ($user) {
+        if ($user->role === 'user') {
+            // Logika Atlet: Harus approved
+            $isUserVerified = $user->verification_status === 'approved';
+        } elseif ($user->isCoach()) {
+            // Logika Pelatih: Harus sudah pilih Jabatan Struktur
+            $isUserVerified = !is_null($user->organization_position_id);
+        } elseif ($user->isAdmin() || $user->isScanner()) {
+            // Admin & Scanner selalu verified (opsional)
+            $isUserVerified = true;
+        }
+    }
+  @endphp
+
   <nav class="fixed top-0 left-0 w-full z-50 transition-all duration-300"
     :class="{
         'bg-white/90 dark:bg-slate-900/90 shadow-lg backdrop-blur-lg': scrolled,
@@ -19,13 +59,35 @@
             <div class="flex items-baseline space-x-4">
               <a href="{{ route('home') }}"
                 class="{{ request()->routeIs('home') ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white' }} rounded-lg px-3 py-2 text-sm transition-colors duration-200">Beranda</a>
+
               <a href="{{ route('events.index') }}"
                 class="{{ request()->routeIs('events.index') ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white' }} rounded-lg px-3 py-2 text-sm transition-colors duration-200">Events</a>
+
+              <a href="{{ route('public.athletes') }}"
+                class="{{ request()->routeIs('public.athletes') ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white' }} rounded-lg px-3 py-2 text-sm transition-colors duration-200">Daftar
+                Atlet</a>
+
+              <a href="{{ route('public.structure') }}"
+                class="{{ request()->routeIs('public.structure') ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white' }} rounded-lg px-3 py-2 text-sm transition-colors duration-200">Struktur
+                Organisasi</a>
+
               @auth
                 <a href="{{ route('my-tickets.index') }}"
                   class="{{ request()->routeIs('my-tickets.index') ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white' }} rounded-lg px-3 py-2 text-sm transition-colors duration-200">Tiket
                   Saya</a>
               @endauth
+
+              @if (Auth::user()?->isCoach())
+                <a href="{{ route('coach.verification') }}"
+                  class="{{ request()->routeIs('coach.verification') ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white' }} rounded-lg px-3 py-2 text-sm transition-colors duration-200">
+                  {{ __('Verifikasi Atlet') }}
+                </a>
+                <a href="{{ route('coach.athletes') }}"
+                  class="{{ request()->routeIs('coach.athletes') ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white' }} rounded-lg px-3 py-2 text-sm transition-colors duration-200">
+                  {{ __('Data Atlet') }}
+                </a>
+              @endif
+
             </div>
           </div>
         </div>
@@ -51,8 +113,21 @@
                 class="flex items-center space-x-2 rounded-full p-1 pr-3 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200">
                 <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white"><span
                     class="text-sm font-medium leading-none">{{ strtoupper(substr(Auth::user()->display_name, 0, 1)) }}</span></span>
-                <span
-                  class="text-sm font-medium text-slate-700 dark:text-slate-200">{{ Auth::user()->display_name }}</span>
+                <span class="text-sm font-medium text-slate-700 dark:text-slate-200 flex items-center gap-1">
+                  {{ Auth::user()->display_name }}
+
+                  {{-- LOGIKA CENTANG BIRU (DESKTOP) --}}
+                  {{-- LOGIKA CENTANG BIRU --}}
+                  @if ($isUserVerified)
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                      class="size-4 text-blue-500" title="Terverifikasi">
+                      <path fill-rule="evenodd"
+                        d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z"
+                        clip-rule="evenodd" />
+                    </svg>
+                  @endif
+
+                </span>
                 <svg class="size-4 text-slate-500 dark:text-slate-400 transition-transform duration-200"
                   :class="{ 'rotate-180': open }" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                   fill="currentColor">
@@ -85,6 +160,12 @@
                   class="{{ request()->routeIs('home') ? 'text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-200' }} block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">Beranda</a>
                 <a href="{{ route('events.index') }}"
                   class="{{ request()->routeIs('events.index') ? 'text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-200' }} block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">Events</a>
+                <a href="{{ route('public.athletes') }}"
+                  class="{{ request()->routeIs('public.athletes') ? 'text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-200' }} block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">Daftar
+                  Atlet</a>
+                <a href="{{ route('public.structure') }}"
+                  class="{{ request()->routeIs('public.structure') ? 'text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-200' }} block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">Struktur
+                  Organisasi</a>
                 <a href="{{ route('my-tickets.index') }}"
                   class="{{ request()->routeIs('my-tickets.index') ? 'text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-200' }} block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">Tiket
                   Saya</a>
@@ -156,10 +237,22 @@
           class="{{ request()->routeIs('home') ? 'bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' }} block rounded-lg px-3 py-2.5 text-base font-medium transition-colors">Beranda</a>
         <a href="{{ route('events.index') }}"
           class="{{ request()->routeIs('events.index') ? 'bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' }} block rounded-lg px-3 py-2.5 text-base font-medium transition-colors">Events</a>
+
         @auth
           <a href="{{ route('my-tickets.index') }}"
             class="{{ request()->routeIs('my-tickets.index') ? 'bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' }} block rounded-lg px-3 py-2.5 text-base font-medium transition-colors">Tiket
             Saya</a>
+
+          @if (Auth::user()->isCoach())
+            <a href="{{ route('coach.verification') }}"
+              class="{{ request()->routeIs('coach.verification') ? 'bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' }} block rounded-lg px-3 py-2.5 text-base font-medium transition-colors">
+              {{ __('Verifikasi Atlet') }}
+            </a>
+            <a href="{{ route('coach.athletes') }}"
+              class="{{ request()->routeIs('coach.athletes') ? 'bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' }} block rounded-lg px-3 py-2.5 text-base font-medium transition-colors">
+              {{ __('Data Atlet') }}
+            </a>
+          @endif
         @endauth
       </nav>
 
@@ -175,8 +268,18 @@
             </span>
           </div>
           <div class="min-w-0 flex-1">
-            <div class="text-base font-medium text-slate-800 dark:text-white truncate">
-              {{ Auth::user()->name }}</div>
+            <div class="text-base font-medium text-slate-800 dark:text-white truncate flex items-center gap-1">
+              {{ Auth::user()->name }}
+              {{-- LOGIKA CENTANG BIRU (MOBILE) --}}
+              @if ($isUserVerified)
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                  class="size-4 text-blue-500">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z"
+                    clip-rule="evenodd" />
+                </svg>
+              @endif
+            </div>
             <div class="text-sm font-medium text-slate-500 dark:text-gray-400 truncate">
               {{ Auth::user()->email }}</div>
           </div>
