@@ -49,11 +49,10 @@
       <div class="flex h-18 items-center justify-between">
         <div class="flex items-center">
           <a href="/" class="flex items-center shrink-0 space-x-2.5 group">
-            <img src="/img/Logo-PD.png" alt="geTix PD"
+            <img src="/img/Logo-PD.png" alt="PD-dig"
               class="h-10 w-auto transition-transform duration-300 group-hover:scale-110" />
             <span
-              class="text-lg font-semibold text-slate-800 dark:text-slate-100 transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">geTix
-              PD</span>
+              class="text-lg font-semibold text-slate-800 dark:text-slate-100 transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">PD-dig</span>
           </a>
           <div class="hidden md:ml-10 md:block">
             <div class="flex items-baseline space-x-4">
@@ -218,8 +217,8 @@
 
     <div class="flex items-center justify-between p-4 border-b dark:border-slate-700/50">
       <a href="/" class="flex items-center shrink-0 space-x-2.5">
-        <img src="/img/Logo-PD.png" alt="geTix PD" class="h-9 w-auto" />
-        <span class="text-base font-semibold text-slate-800 dark:text-slate-100">geTix PD</span>
+        <img src="/img/Logo-PD.png" alt="PD-dig" class="h-9 w-auto" />
+        <span class="text-base font-semibold text-slate-800 dark:text-slate-100">PD-dig</span>
       </a>
       <button @click="mobileOpen = false"
         class="relative inline-flex items-center justify-center rounded-md p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
