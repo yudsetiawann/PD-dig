@@ -26,53 +26,57 @@ class EventForm
     public static function configure(Schema $schema): Schema
     {
         return $schema->schema([
-            // KOLOM KIRI (Main Content)
-            Section::make('Informasi Utama')
-                ->description('Masukkan detail dasar mengenai event.')
-                ->icon('heroicon-o-information-circle') // Untuk Section, 'icon' BENAR
-                ->schema([
-                    TextInput::make('title')
-                        ->label('Judul Event')
-                        ->required()
-                        ->live(onBlur: true)
-                        ->afterStateUpdated(fn(string $operation, $state, Set $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null)
-                        ->columnSpanFull(),
-
-                    TextInput::make('slug')
-                        ->required()
-                        ->unique(ignoreRecord: true)
-                        ->prefix(url('/event/') . '/')
-                        ->columnSpanFull(),
-
-                    RichEditor::make('description')
-                        ->label('Deskripsi Lengkap')
-                        ->columnSpanFull(),
-                ])
-                ->columnSpan(2),
-
-            // KOLOM KANAN (Sidebar / Settings)
+            // --- GRUP KIRI (Main Content: 2/3 layar) ---
             Group::make()
                 ->schema([
-                    // Section Media
+                    Section::make('Informasi Utama')
+                        ->description('Masukkan detail dasar mengenai event.')
+                        ->icon('heroicon-o-information-circle')
+                        ->schema([
+                            TextInput::make('title')
+                                ->label('Judul Event')
+                                ->required()
+                                ->live(onBlur: true)
+                                ->afterStateUpdated(fn(string $operation, $state, Set $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null)
+                                ->columnSpanFull(),
+
+                            TextInput::make('slug')
+                                ->required()
+                                ->unique(ignoreRecord: true)
+                                ->prefix(url('/event/') . '/')
+                                ->columnSpanFull(),
+
+                            RichEditor::make('description')
+                                ->label('Deskripsi Lengkap')
+                                ->columnSpanFull(),
+                        ]),
+
                     Section::make('Media')
                         ->collapsible()
                         ->schema([
                             SpatieMediaLibraryFileUpload::make('thumbnail')
+                                ->label('Thumbnail Utama')
                                 ->collection('thumbnails')
                                 ->image()
                                 ->imageEditor()
                                 ->required(),
 
                             SpatieMediaLibraryFileUpload::make('gallery')
+                                ->label('Galeri Dokumentasi')
                                 ->collection('gallery')
                                 ->multiple()
                                 ->reorderable()
                                 ->image()
                                 ->imageEditor(),
                         ]),
+                ])
+                ->columnSpan(['lg' => 2]),
 
-                    // Section Detail & Waktu
+            // --- GRUP KANAN (Sidebar: 1/3 layar) ---
+            Group::make()
+                ->schema([
                     Section::make('Detail & Waktu')
+                        ->icon('heroicon-o-calendar')
                         ->schema([
                             Select::make('event_type')
                                 ->label('Tipe Event')
@@ -87,128 +91,24 @@ class EventForm
 
                             TextInput::make('location')
                                 ->label('Lokasi')
-                                ->prefixIcon('heroicon-m-map-pin') // PERBAIKAN: Gunakan prefixIcon
+                                ->prefixIcon('heroicon-m-map-pin')
                                 ->required(),
 
                             DatePicker::make('starts_at')
                                 ->label('Mulai')
                                 ->required()
                                 ->native(false)
-                                ->prefixIcon('heroicon-m-calendar-days'), // PERBAIKAN: Gunakan prefixIcon
+                                ->prefixIcon('heroicon-m-calendar-days'),
 
                             DatePicker::make('ends_at')
                                 ->label('Selesai')
                                 ->after('starts_at')
                                 ->native(false)
-                                ->prefixIcon('heroicon-m-calendar-days'), // PERBAIKAN: Gunakan prefixIcon
+                                ->prefixIcon('heroicon-m-calendar-days'),
                         ]),
 
-                    Section::make('Pengaturan Sertifikat')
-                        ->schema([
-                            // Uploader Depan
-                            SpatieMediaLibraryFileUpload::make('front_image')
-                                ->label('Template Depan')
-                                ->collection('certificate_front') // Disimpan dalam koleksi khusus
-                                ->image()
-                                ->imageEditor() // Opsional: Memudahkan crop/edit sebelum upload
-                                ->maxSize(5120) // Opsional: Batas 5MB
-                                ->columnSpanFull(),
-
-                            // Uploader Belakang
-                            SpatieMediaLibraryFileUpload::make('back_image')
-                                ->label('Template Belakang')
-                                ->collection('certificate_back')
-                                ->image()
-                                ->imageEditor(),
-
-
-                            Toggle::make('is_certificate_published')
-                                ->label('Terbitkan Sertifikat')
-                                ->inline(false),
-
-                            // --- TAMBAHKAN BAGIAN INI ---
-                            Select::make('certificate_settings.orientation')
-                                ->label('Orientasi Kertas')
-                                ->options([
-                                    'landscape' => 'Landscape (Melebar)',
-                                    'portrait' => 'Portrait (Tegak)',
-                                ])
-                                ->default('landscape')
-                                // ->required()
-                                ->selectablePlaceholder(false),
-                            // ----------------------------
-
-                            // Pengaturan posisi teks (Anggap saja layoutnya center, kita cuma butuh atur posisi vertikal/Y)
-                            Group::make()->schema([
-                                TextInput::make('certificate_settings.name_top_margin')
-                                    ->label('Jarak Nama dari Atas (px)')
-                                    ->numeric()
-                                    ->default(300),
-
-                                TextInput::make('certificate_settings.status_top_margin')
-                                    ->label('Jarak Status dari Atas (px)')
-                                    ->numeric()
-                                    ->default(450),
-
-                                // TAMBAHAN BARU: Setting Posisi Data Tambahan (Halaman Depan)
-                                // TextInput::make('certificate_settings.dob_top_margin')
-                                //     ->label('Jarak TTL dari Atas (px)')
-                                //     ->numeric()
-                                //     ->default(350),
-
-                                // TextInput::make('certificate_settings.school_top_margin')
-                                //     ->label('Jarak Ranting/Sekolah dari Atas (px)')
-                                //     ->numeric()
-                                //     ->default(400),
-
-                                TextInput::make('certificate_settings.font_color')
-                                    ->label('Warna Teks (Hex)')
-                                    ->default('#000000'),
-                            ])->columns(3),
-
-                            // PEMBATAS VISUAL
-                            // Placeholder::make('separator_back')
-                            //     ->label('Pengaturan Halaman Belakang (Daftar Nilai)')
-                            //     ->columnSpanFull(),
-
-                            // PENGATURAN HALAMAN BELAKANG
-                            // Group::make()->schema([
-                            //     // 1. Posisi Awal (Koordinat X dan Y)
-                            //     TextInput::make('certificate_settings.back_content_start_y')
-                            //         ->label('Posisi Atas Baris Pertama (Y)')
-                            //         ->numeric()
-                            //         ->default(300),
-                            //     // ->required(),
-
-                            //     TextInput::make('certificate_settings.back_content_start_x')
-                            //         ->label('Posisi Kiri (X)')
-                            //         ->numeric()
-                            //         ->default(100),
-                            //     // ->required(),
-
-                            //     // 2. Pengaturan Jarak Antar Nilai
-                            //     TextInput::make('certificate_settings.back_line_height')
-                            //         ->label('Jarak Antar Baris (Line Height)')
-                            //         ->numeric()
-                            //         ->default(50), // Sesuaikan dengan jarak garis di desain sertifikat
-                            //     // ->required(),
-
-                            //     // 3. Styling Teks
-                            //     TextInput::make('certificate_settings.back_font_size')
-                            //         ->label('Ukuran Font Nilai')
-                            //         ->numeric()
-                            //         ->default(20),
-
-                            //     TextInput::make('certificate_settings.back_font_color')
-                            //         ->label('Warna Teks Nilai')
-                            //         ->default('#000000')
-                            //         ->prefix('#'),
-
-                            // ])->columns(3),
-                        ]),
-
-                    // Section Harga & Kuota
                     Section::make('Konfigurasi Tiket')
+                        ->icon('heroicon-o-ticket')
                         ->schema([
                             Toggle::make('has_dynamic_pricing')
                                 ->label('Aktifkan Harga Bertingkat')
@@ -224,20 +124,10 @@ class EventForm
 
                             KeyValue::make('level_prices')
                                 ->label('Daftar Harga')
-                                ->keyLabel('Tingkatan/Kategori')
+                                ->keyLabel('Kategori')
                                 ->valueLabel('Harga')
-                                // ->valueHelperText('Masukkan hanya angka, misal: 50000')
                                 ->visible(fn(Get $get): bool => $get('has_dynamic_pricing'))
                                 ->columnSpanFull(),
-                            // ->helperText(function (Get $get): string {
-                            //     if ($get('event_type') === 'ujian') {
-                            //         // UPDATE DI SINI: Sesuaikan panduan dengan logika baru Anda
-                            //         return 'Untuk Ujian (Gunakan Key ini): pemula_dasar1, dasar2, cakel, putih, putih_hijau, hijau';
-                            //     } elseif ($get('event_type') === 'pertandingan') {
-                            //         return 'Untuk Pertandingan: Gunakan key seperti tanding, tgr, serang_hindar.';
-                            //     }
-                            //     return 'Masukkan key harga yang sesuai.';
-                            // }),
 
                             TextInput::make('ticket_quota')
                                 ->label('Total Kuota')
@@ -246,23 +136,84 @@ class EventForm
                                 ->required(),
                         ]),
 
-                    // Fieldset untuk Kontak
-                    Fieldset::make('Narahubung')
+                    Section::make('Narahubung')
                         ->schema([
                             TextInput::make('contact_person_name')
                                 ->label('Nama')
-                                ->prefixIcon('heroicon-m-user') // PERBAIKAN: Tambahan icon user
+                                ->prefixIcon('heroicon-m-user')
                                 ->placeholder('Budi Santoso'),
                             TextInput::make('contact_person_phone')
                                 ->label('WhatsApp')
                                 ->tel()
-                                ->prefixIcon('heroicon-m-phone') // PERBAIKAN: Tambahan icon phone
-                                ->prefix('+62'), // Prefix teks tetap boleh digabung dengan prefixIcon
-                        ])->columns(1),
+                                ->prefixIcon('heroicon-m-phone')
+                                ->prefix('+62'),
+                        ]),
 
                     Hidden::make('user_id')->default(fn() => Auth::id()),
                 ])
-                ->columnSpan(1),
+                ->columnSpan(['lg' => 1]),
+
+            // --- SECTION BAWAH (Full Width) ---
+            // Dipisah agar setting yang kompleks ini memiliki ruang yang cukup
+            Section::make('Pengaturan Sertifikat')
+                ->description('Konfigurasi template dan tata letak sertifikat.')
+                ->icon('heroicon-o-academic-cap')
+                ->collapsed() // Default tertutup agar halaman tidak terlalu panjang
+                ->columnSpanFull()
+                ->schema([
+                    Group::make()->schema([
+                        // Uploader Depan
+                        SpatieMediaLibraryFileUpload::make('front_image')
+                            ->label('Template Depan')
+                            ->collection('certificate_front')
+                            ->image()
+                            ->imageEditor()
+                            ->maxSize(5120),
+
+                        // Uploader Belakang
+                        SpatieMediaLibraryFileUpload::make('back_image')
+                            ->label('Template Belakang')
+                            ->collection('certificate_back')
+                            ->image()
+                            ->imageEditor(),
+                    ])->columns(2),
+
+                    Group::make()->schema([
+                        Toggle::make('is_certificate_published')
+                            ->label('Terbitkan Sertifikat')
+                            ->inline(false),
+
+                        Select::make('certificate_settings.orientation')
+                            ->label('Orientasi Kertas')
+                            ->options([
+                                'landscape' => 'Landscape (Melebar)',
+                                'portrait' => 'Portrait (Tegak)',
+                            ])
+                            ->default('landscape')
+                            ->selectablePlaceholder(false),
+                    ])->columns(2),
+
+                    Section::make('Tata Letak Teks')
+                        ->schema([
+                            TextInput::make('certificate_settings.name_top_margin')
+                                ->label('Jarak Nama (Y)')
+                                ->numeric()
+                                ->suffix('px')
+                                ->default(300),
+
+                            TextInput::make('certificate_settings.status_top_margin')
+                                ->label('Jarak Status (Y)')
+                                ->numeric()
+                                ->suffix('px')
+                                ->default(450),
+
+                            TextInput::make('certificate_settings.font_color')
+                                ->label('Warna Teks')
+                                ->default('#000000')
+                                ->prefix('#'),
+                        ])->columns(3),
+                ]),
+
         ])->columns(3);
     }
 }
