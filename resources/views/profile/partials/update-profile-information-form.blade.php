@@ -132,6 +132,29 @@
         </h3>
       </div>
 
+      {{-- Nomor Induk Anggota Field --}}
+      <div class="col-span-1 md:col-span-2">
+        <x-input-label for="nia" :value="__('Nomor Induk Anggota (NIA)')" class="mb-1 text-gray-800 dark:text-gray-200" />
+
+        <div class="relative">
+          <x-text-input id="nia" type="text"
+            class="block w-full rounded-lg border-slate-300 bg-slate-100 text-slate-500 shadow-sm cursor-not-allowed dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-400 font-mono tracking-wider"
+            :value="$user->nia ?? 'Belum Diterbitkan (Lengkapi Data)'" readonly />
+
+          @if ($user->nia)
+            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+              <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+          @endif
+        </div>
+        <p class="mt-1 text-xs text-slate-500">
+          *NIA digenerate otomatis oleh sistem setelah Tahun Masuk & Tanggal Lahir dilengkapi.
+        </p>
+      </div>
+
       {{-- 10. Tingkatan & Tahun Masuk (Semua Role Butuh Ini) --}}
       <div class="col-span-1">
         <x-input-label for="level_id" :value="__('Tingkatan Saat Ini')" class="mb-1 text-gray-800 dark:text-gray-200" />
