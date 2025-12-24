@@ -6,6 +6,8 @@ use App\Models\User;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Layout;
+use App\Models\UserVerification;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 #[Layout('layouts.app')]
@@ -34,9 +36,10 @@ class AthleteVerification extends Component
         $unitIds = $coach->coachedUnits()->pluck('units.id')->toArray();
 
         return User::query()
-            ->where('role', 'user') // Hanya role user (atlet)
-            ->whereIn('unit_id', $unitIds) // Hanya di unit pelatih
-            ->where('verification_status', 'pending') // Fokus ke yang pending dulu
+            ->with(['unit', 'level']) // <--- TAMBAHKAN BARIS INI (Solusi)
+            ->where('role', 'user')
+            ->whereIn('unit_id', $unitIds)
+            ->where('verification_status', 'pending')
             ->orderBy('created_at', 'desc')
             ->paginate(10);
     }
@@ -45,19 +48,39 @@ class AthleteVerification extends Component
     {
         $athlete = User::find($userId);
 
-        // Pastikan atlet ini benar-benar muridnya (Security check)
-        $coachUnitIds = Auth::user()->coachedUnits->pluck('id')->toArray();
+        // Security Check (Unit match)
+        $coach = Auth::user();
+        $coachUnitIds = $coach->coachedUnits->pluck('id')->toArray();
+
         if (! in_array($athlete->unit_id, $coachUnitIds)) {
-            session()->flash('error', 'Anda tidak memiliki hak memverifikasi atlet ini.');
+            session()->flash('error', 'Akses ditolak.');
             return;
         }
 
-        $athlete->update([
-            'verification_status' => 'approved',
-            'rejection_note' => null
-        ]);
+        DB::transaction(function () use ($athlete, $coach) {
+            // 1. Update Status (Ini akan mentrigger Observer -> Generate NIA)
+            // Kita harus force fill agar observer jalan jika data tidak dirty,
+            // tapi disini status pasti berubah dari pending -> approved.
+            $athlete->verification_status = 'approved';
+            $athlete->rejection_note = null;
+            $athlete->save();
 
-        session()->flash('message', "Atlet {$athlete->name} berhasil disetujui.");
+            // 2. Refresh model untuk mendapatkan data terbaru (termasuk NIA yang baru digenerate observer)
+            $athlete->refresh();
+
+            // 3. BUAT SNAPSHOT (Rekaman Kebenaran)
+            // Kita simpan hanya atribut yang "Verifiable" agar hemat storage
+            $snapshotData = $athlete->only(User::VERIFIABLE_ATTRIBUTES);
+
+            UserVerification::create([
+                'user_id' => $athlete->id,
+                'verifier_id' => $coach->id,
+                'approved_at' => now(),
+                'snapshot_data' => $snapshotData,
+            ]);
+        });
+
+        session()->flash('message', "Atlet {$athlete->name} berhasil disetujui & NIA diterbitkan.");
     }
 
     // Buka Modal Reject
