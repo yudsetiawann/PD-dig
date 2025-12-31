@@ -61,16 +61,16 @@ class UserObserver
      */
     public function updated(User $user): void
     {
-        // // Cek apakah NIA masih kosong?
-        // // Dan apakah user BARU SAJA melengkapi data yang dibutuhkan (join_year / dob)?
-        // if (is_null($user->nia) && $user->join_year && $user->date_of_birth) {
+        // Cek apakah NIA masih kosong?
+        // Dan apakah user BARU SAJA melengkapi data yang dibutuhkan (join_year / dob)?
+        if (is_null($user->nia) && $user->join_year && $user->date_of_birth) {
 
-        //     // Generate NIA sekarang
-        //     $this->generateNia($user);
+            // Generate NIA sekarang
+            $this->generateNia($user);
 
-        //     // Simpan perubahan (tanpa men-trigger event updated lagi agar tidak loop infinite)
-        //     $user->saveQuietly();
-        // }
+            // Simpan perubahan (tanpa men-trigger event updated lagi agar tidak loop infinite)
+            $user->saveQuietly();
+        }
 
         // 1. CEK PERUBAHAN DATA SENSITIF
         if ($user->isDirty(User::VERIFIABLE_ATTRIBUTES)) {
