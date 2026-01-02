@@ -18,7 +18,7 @@
                 'Dokumentasi perolehan medali dan pertandingan atlit Perisai Diri pada kejuaraan silat Perisai Diri Cup XX 2025 se-kabupaten Tasikmalaya antar pelajar.',
             'thumbnail' => asset('img/pdcup-xx.jpeg'),
             'links' => [
-                'drive' => 'https://drive.google.com/',
+                'drive' => 'https://drive.google.com/drive/folders/1gixrqIJ_7IoFNCv2BEBhAbtzdbfCFYic',
                 'instagram' => 'https://instagram.com/',
             ],
         ],
