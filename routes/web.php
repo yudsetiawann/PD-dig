@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Event;
 use App\Livewire\PublicUnitList;
 use App\Livewire\Coach\AthleteList;
 use App\Livewire\PublicAthleteList;
@@ -21,7 +22,13 @@ use App\Http\Controllers\CertificateController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    // Ambil 3 event terbaru yang belum expired untuk ditampilkan di homepage
+    $latestEvents = Event::where('starts_at', '>=', now())
+        ->orderBy('starts_at', 'asc')
+        ->limit(3)
+        ->get();
+
+    return view('welcome', compact('latestEvents'));
 })->name('home');
 
 Route::get('/events', [EventController::class, 'index'])->name('events.index');
