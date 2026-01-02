@@ -10,7 +10,7 @@
         <div class="flex items-center gap-3 mb-6">
           <!-- Logo -->
           <x-application-logo class="h-10 w-auto" />
-          <span class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">geTix PD</span>
+          <span class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">PD-dig</span>
         </div>
         <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed max-w-sm">
           Platform e-ticketing resmi untuk semua kegiatan Keluarga Silat Nasional Indonesia Perisai Diri.
