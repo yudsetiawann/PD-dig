@@ -1,0 +1,50 @@
+<?php
+
+namespace App\Filament\Resources\ActivityArchives;
+
+use BackedEnum;
+use Filament\Tables\Table;
+use Filament\Schemas\Schema;
+use App\Models\ActivityArchive;
+use Filament\Resources\Resource;
+use Filament\Support\Icons\Heroicon;
+use App\Filament\Resources\ActivityArchives\Pages\EditActivityArchive;
+use App\Filament\Resources\ActivityArchives\Pages\ListActivityArchives;
+use App\Filament\Resources\ActivityArchives\Pages\CreateActivityArchive;
+use App\Filament\Resources\ActivityArchives\Schemas\ActivityArchiveForm;
+use App\Filament\Resources\ActivityArchives\Tables\ActivityArchivesTable;
+
+class ActivityArchiveResource extends Resource
+{
+    protected static ?string $model = ActivityArchive::class;
+
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+
+    protected static ?string $recordTitleAttribute = 'title';
+
+    public static function form(Schema $schema): Schema
+    {
+        return ActivityArchiveForm::configure($schema);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return ActivityArchivesTable::configure($table);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => ListActivityArchives::route('/'),
+            'create' => CreateActivityArchive::route('/create'),
+            'edit' => EditActivityArchive::route('/{record}/edit'),
+        ];
+    }
+}
