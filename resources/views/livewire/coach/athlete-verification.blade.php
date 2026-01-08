@@ -5,10 +5,10 @@
     <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div>
         <h2 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-          Verifikasi Atlet
+          Verifikasi Anggota
         </h2>
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          Tinjau dan validasi pendaftaran atlet yang masuk.
+          Tinjau dan validasi pendaftaran anggota yang masuk.
         </p>
       </div>
       <div
@@ -114,7 +114,7 @@
             </svg>
           </div>
           <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Tidak ada permintaan</h3>
-          <p class="text-gray-500 dark:text-gray-400 mt-1">Belum ada atlet baru yang menunggu verifikasi saat ini.</p>
+          <p class="text-gray-500 dark:text-gray-400 mt-1">Belum ada anggota baru yang menunggu verifikasi saat ini.</p>
         </div>
       @else
         <div class="overflow-x-auto">
@@ -122,7 +122,7 @@
             <thead class="bg-gray-50 dark:bg-gray-900/50">
               <tr>
                 <th scope="col"
-                  class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Profil Atlet
+                  class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Profil Anggota
                 </th>
                 <th scope="col"
                   class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Afiliasi &
@@ -217,7 +217,7 @@
                       </button>
 
                       <button wire:click="approve('{{ $athlete->id }}')"
-                        wire:confirm="Yakin data atlet ini sudah valid?"
+                        wire:confirm="Yakin data anggota ini sudah valid?"
                         class="inline-flex items-center px-3 py-1.5 border border-transparent shadow-sm text-xs font-semibold rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all">
                         <svg class="-ml-0.5 mr-1.5 h-4 w-4" fill="none" stroke="currentColor"
                           viewBox="0 0 24 24">
@@ -284,7 +284,7 @@
                   </h3>
                   <div class="mt-2">
                     <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">
-                      Berikan alasan kenapa data atlet ini ditolak.
+                      Berikan alasan kenapa data anggota ini ditolak.
                     </p>
 
                     {{-- Textarea Input --}}
