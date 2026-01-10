@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('organization_positions', function (Blueprint $table) {
             $table->id();
-            $table->string('name'); // Contoh: Ketua, Sekretaris
-            $table->integer('order_level')->default(99); // Untuk urutan tampilan (1 paling atas)
-            $table->boolean('is_active')->default(true);
+            $table->string('name'); // Nama Jabatan (Ketua, Sekretaris, dll)
+            $table->integer('order_level')->default(0); // Untuk sorting dropdown
+            $table->boolean('is_active')->default(true); // Soft delete alternatif
             $table->timestamps();
         });
     }
