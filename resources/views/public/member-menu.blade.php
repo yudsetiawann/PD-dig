@@ -1,7 +1,7 @@
 <x-app-layout title="Direktori Anggota">
   <x-slot name="header">
     <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-      Direktori Anggota
+      Direktori
     </h1>
   </x-slot>
 
