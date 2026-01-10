@@ -218,8 +218,7 @@ class User extends Authenticatable implements FilamentUser, HasMedia
     {
         $this
             ->addMediaCollection('profile_photo')
-            ->singleFile() // Hapus foto lama otomatis saat upload baru
-            ->useDisk('public'); // Simpan di storage/app/public
+            ->singleFile(); // Hapus foto lama otomatis saat upload baru
     }
 
     /**
