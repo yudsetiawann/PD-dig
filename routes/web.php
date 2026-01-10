@@ -2,6 +2,7 @@
 
 use App\Models\Event;
 use App\Livewire\PublicUnitList;
+use App\Livewire\PublicCoachList;
 use App\Livewire\Coach\AthleteList;
 use App\Livewire\PublicAthleteList;
 use Illuminate\Support\Facades\Route;
@@ -65,6 +66,7 @@ Route::middleware(['auth', 'verified', 'verified_member'])->group(function () {
     Route::get('/daftar-anggota/semua', PublicAthleteList::class)->name('public.athletes.all');
     Route::get('/daftar-anggota/ranting', PublicUnitList::class)->name('public.units');
     Route::get('/daftar-anggota/ranting/{unit}', PublicAthleteList::class)->name('public.athletes.by-unit');
+    Route::get('/daftar-anggota/pelatih', PublicCoachList::class)->name('public.coaches');
 
     Route::get('/struktur-organisasi', PublicOrganizationStructure::class)->name('public.structure');
 
