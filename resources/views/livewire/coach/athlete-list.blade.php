@@ -123,10 +123,17 @@
                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
                   <td class="px-6 py-4 whitespace-nowrap">
                     <div class="flex items-center">
-                      <div
-                        class="h-10 w-10 shrink-0 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-sm">
-                        {{ substr($athlete->name, 0, 2) }}
-                      </div>
+                      @if ($athlete->getFirstMediaUrl('profile_photo'))
+                        <img src="{{ $athlete->getFirstMediaUrl('profile_photo') }}" alt="{{ $athlete->name }}"
+                          class="h-10 w-10 shrink-0 rounded-full object-cover">
+                      @else
+                        <div
+                          class="h-10 w-10 shrink-0 rounded-full bg-blue-100 flex items-center justify-center
+                                   text-blue-700 font-bold text-sm">
+                          {{ strtoupper(substr($athlete->name, 0, 2)) }}
+                        </div>
+                      @endif
+
                       <div class="ml-4">
                         <div class="text-sm font-medium text-gray-900 dark:text-white">
                           {{ $athlete->name }}

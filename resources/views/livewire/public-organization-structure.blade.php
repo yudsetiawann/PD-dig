@@ -76,10 +76,19 @@
             </div>
 
             <div class="p-6 text-center">
-              <div
-                class="mx-auto h-24 w-24 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-3xl font-bold mb-4 ring-4 ring-blue-50 dark:ring-blue-900/20 group-hover:scale-110 transition-transform duration-300">
-                {{ substr($member->name, 0, 2) }}
-              </div>
+              @if ($member->getFirstMediaUrl('profile_photo'))
+                <img src="{{ $member->getFirstMediaUrl('profile_photo') }}" alt="{{ $member->name }}"
+                  class="mx-auto h-24 w-24 rounded-full object-cover ring-4 ring-blue-50 dark:ring-blue-900/20
+                           group-hover:scale-110 transition-transform duration-300">
+              @else
+                <div
+                  class="mx-auto h-24 w-24 rounded-full bg-blue-100 flex items-center justify-center
+                           text-blue-600 text-3xl font-bold mb-4 ring-4 ring-blue-50 dark:ring-blue-900/20
+                           group-hover:scale-110 transition-transform duration-300">
+                  {{ strtoupper(substr($member->name, 0, 2)) }}
+                </div>
+              @endif
+
               <h3 class="text-lg font-bold text-blue-600 dark:text-blue-400 mb-1">
                 {{ $member->organizationPosition?->name ?? '-' }}
               </h3>

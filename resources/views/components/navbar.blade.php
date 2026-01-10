@@ -99,8 +99,17 @@
             <div class="relative" x-data="{ open: false }">
               <button @click="open = !open"
                 class="flex items-center space-x-2 rounded-full p-1 pr-3 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200">
-                <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white"><span
-                    class="text-sm font-medium leading-none">{{ strtoupper(substr(Auth::user()->display_name, 0, 1)) }}</span></span>
+                @if (Auth::user()->getFirstMediaUrl('profile_photo'))
+                  <img src="{{ Auth::user()->getFirstMediaUrl('profile_photo') }}" alt="Profile Photo"
+                    class="h-8 w-8 rounded-full object-cover">
+                @else
+                  <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white">
+                    <span class="text-sm font-medium leading-none">
+                      {{ strtoupper(substr(Auth::user()->display_name, 0, 1)) }}
+                    </span>
+                  </span>
+                @endif
+
                 <span class="text-sm font-medium text-slate-700 dark:text-slate-200 flex items-center gap-1">
                   <span class="text-sm font-medium text-slate-700 dark:text-slate-200 flex items-center gap-1">
                     {{ Auth::user()->display_name }}
@@ -232,7 +241,8 @@
             class="{{ request()->routeIs('events.index') ? 'bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' }} block rounded-lg px-3 py-2.5 text-base font-medium transition-colors">Events</a>
 
           <a href="{{ route('public.menu') }}"
-            class="{{ request()->routeIs('public.menu') || request()->routeIs('public.athletes.all') || request()->routeIs('public.units') ? 'bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' }} block rounded-lg px-3 py-2.5 text-base font-medium transition-colors">Ranting & Anggota</a>
+            class="{{ request()->routeIs('public.menu') || request()->routeIs('public.athletes.all') || request()->routeIs('public.units') ? 'bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' }} block rounded-lg px-3 py-2.5 text-base font-medium transition-colors">Ranting
+            & Anggota</a>
 
           <a href="{{ route('public.structure') }}"
             class="{{ request()->routeIs('public.structure') ? 'bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' }} block rounded-lg px-3 py-2.5 text-base font-medium transition-colors">Struktur
@@ -265,10 +275,17 @@
       @auth
         <div class="flex items-center space-x-3">
           <div class="shrink-0">
-            <span
-              class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white ring-1 ring-white/10">
-              <span class="text-base font-medium leading-none">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
-            </span>
+            @if (Auth::user()->getFirstMediaUrl('profile_photo'))
+              <img src="{{ Auth::user()->getFirstMediaUrl('profile_photo') }}" alt="Profile Photo"
+                class="h-8 w-8 rounded-full object-cover">
+            @else
+              <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white">
+                <span class="text-sm font-medium leading-none">
+                  {{ strtoupper(substr(Auth::user()->display_name, 0, 1)) }}
+                </span>
+              </span>
+            @endif
+
           </div>
           <div class="min-w-0 flex-1">
             <div class="text-base font-medium text-slate-800 dark:text-white truncate flex items-center gap-1">
