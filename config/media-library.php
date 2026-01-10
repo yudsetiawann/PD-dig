@@ -13,5 +13,6 @@ return [
     |
     */
     'disk_name' => config('filesystems.default_public_disk', 'public'),
+    'disk_name' => env('MEDIA_DISK', 'public'),
 
 ];
