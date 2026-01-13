@@ -155,7 +155,7 @@ class OrderController extends Controller
     public function payCash(Order $order)
     {
         // 1. Validasi Kepemilikan Order
-        if ($order->user_id !== Auth::id()) {
+        if ((int)$order->user_id !== (int)Auth::id()) {
             abort(403, 'Anda tidak memiliki akses ke pesanan ini.');
         }
 
