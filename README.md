@@ -4,7 +4,7 @@
 </p>
 <!-- Judul Utama -->
 <h1 align="center">
-geTix PD
+PD-dig
 </h1>
 <!-- Subjudul & Badges -->
 <p align="center">
