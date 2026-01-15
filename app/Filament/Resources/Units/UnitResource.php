@@ -13,6 +13,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class UnitResource extends Resource
 {
@@ -26,6 +27,10 @@ class UnitResource extends Resource
 
     // Mengubah label plural (untuk judul tabel "Daftar Ranting")
     protected static ?string $pluralModelLabel = 'Data Ranting/Unit/Instansi';
+
+    protected static string|UnitEnum|null $navigationGroup = 'Manajemen Anggota';
+
+    protected static ?int $navigationSort = 3; // Urutan di sidebar
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-building-office-2';
 

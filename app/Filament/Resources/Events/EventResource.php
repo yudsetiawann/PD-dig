@@ -7,7 +7,6 @@ use App\Models\Event;
 use Filament\Tables\Table;
 use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
-use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Auth;
 use App\Filament\Resources\Events\Pages\EditEvent;
 use App\Filament\Resources\Events\Pages\ListEvents;
@@ -16,12 +15,18 @@ use App\Filament\Resources\Events\Schemas\EventForm;
 use App\Filament\Resources\Events\Tables\EventsTable;
 use App\Filament\Resources\Events\RelationManagers\OrdersRelationManager;
 use App\Filament\Resources\Events\RelationManagers\ParticipantsRelationManager;
+use UnitEnum;
 
 class EventResource extends Resource
 {
     protected static ?string $model = Event::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-calendar-days';
+
+    protected static string|UnitEnum|null $navigationGroup = 'Manajemen Event';
+
+    // Agar 'Events' muncul di urutan pertama dalam grup
+    protected static ?int $navigationSort = 1;
 
     protected static ?string $recordTitleAttribute = 'Event';
 

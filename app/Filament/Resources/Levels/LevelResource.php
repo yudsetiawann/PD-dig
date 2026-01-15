@@ -19,6 +19,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use App\Filament\Resources\Levels\Pages\ManageLevels;
+use UnitEnum;
 
 class LevelResource extends Resource
 {
@@ -32,6 +33,10 @@ class LevelResource extends Resource
 
     // Mengubah label plural (untuk judul tabel "Daftar Tingkatan")
     protected static ?string $pluralModelLabel = 'Data Tingkatan';
+
+    protected static string|UnitEnum|null $navigationGroup = 'Manajemen Anggota';
+
+    protected static ?int $navigationSort = 4; // Urutan di sidebar
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-chart-bar';
 

@@ -6,10 +6,14 @@ use App\Models\Order;
 use Filament\Pages\Page;
 use Livewire\Attributes\On;
 use Illuminate\Support\Facades\Log;
+use UnitEnum;
 
 class ScanTicket extends Page
 {
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-qr-code';
+    protected static string|UnitEnum|null $navigationGroup = 'Manajemen Event';
+    // Opsional: Agar 'Events' muncul di urutan pertama dalam grup
+    protected static ?int $navigationSort = 2;
     protected string $view = 'filament.pages.scan-ticket';
     protected static ?string $navigationLabel = 'Scan E-Ticket';
     protected static ?string $title = 'Check-in Scanner';

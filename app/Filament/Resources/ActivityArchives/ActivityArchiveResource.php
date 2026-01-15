@@ -12,6 +12,7 @@ use App\Filament\Resources\ActivityArchives\Pages\ListActivityArchives;
 use App\Filament\Resources\ActivityArchives\Pages\CreateActivityArchive;
 use App\Filament\Resources\ActivityArchives\Schemas\ActivityArchiveForm;
 use App\Filament\Resources\ActivityArchives\Tables\ActivityArchivesTable;
+use UnitEnum;
 
 class ActivityArchiveResource extends Resource
 {
@@ -24,6 +25,10 @@ class ActivityArchiveResource extends Resource
     // Mengganti judul di header halaman dan tombol "New"
     protected static ?string $modelLabel = 'Arsip Kegiatan';
     protected static ?string $pluralModelLabel = 'Arsip Kegiatan';
+
+    // Grouping
+    protected static ?int $navigationSort = 3;
+    protected static string|UnitEnum|null $navigationGroup = 'Manajemen Event';
 
     protected static ?string $recordTitleAttribute = 'title';
 

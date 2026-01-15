@@ -13,12 +13,14 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class OrganizationPositionResource extends Resource
 {
     protected static ?string $model = OrganizationPosition::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-briefcase';
+    protected static string|UnitEnum|null $navigationGroup = 'Manajemen Anggota';
     protected static ?string $navigationLabel = 'Jabatan Organisasi';
     protected static ?int $navigationSort = 2;
 
