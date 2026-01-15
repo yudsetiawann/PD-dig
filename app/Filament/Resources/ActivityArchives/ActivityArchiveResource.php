@@ -7,7 +7,6 @@ use Filament\Tables\Table;
 use Filament\Schemas\Schema;
 use App\Models\ActivityArchive;
 use Filament\Resources\Resource;
-use Filament\Support\Icons\Heroicon;
 use App\Filament\Resources\ActivityArchives\Pages\EditActivityArchive;
 use App\Filament\Resources\ActivityArchives\Pages\ListActivityArchives;
 use App\Filament\Resources\ActivityArchives\Pages\CreateActivityArchive;
@@ -18,7 +17,13 @@ class ActivityArchiveResource extends Resource
 {
     protected static ?string $model = ActivityArchive::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-archive-box';
+
+    // 2. Mengganti Nama Menu di Sidebar
+    protected static ?string $navigationLabel = 'Arsip Kegiatan';
+    // Mengganti judul di header halaman dan tombol "New"
+    protected static ?string $modelLabel = 'Arsip Kegiatan';
+    protected static ?string $pluralModelLabel = 'Arsip Kegiatan';
 
     protected static ?string $recordTitleAttribute = 'title';
 
