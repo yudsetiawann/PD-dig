@@ -85,6 +85,11 @@
                 <a href="{{ route('public.structure') }}"
                   class="{{ request()->routeIs('public.structure') ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white' }} rounded-lg px-3 py-2 text-sm transition-colors duration-200">Struktur
                   Organisasi</a>
+
+                <a href="{{ route('news.index') }}"
+                  class="{{ request()->routeIs('news.*') ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white' }} rounded-lg px-3 py-2 text-sm transition-colors duration-200">
+                  Berita & Info
+                </a>
               @endif
 
               {{-- 3. MENU KHUSUS PELATIH (VERIFIED ONLY - DROPDOWN) --}}
@@ -312,6 +317,11 @@
           <a href="{{ route('public.structure') }}"
             class="{{ request()->routeIs('public.structure') ? 'bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' }} block rounded-lg px-3 py-2.5 text-base font-medium transition-colors">Struktur
             Organisasi</a>
+
+          <a href="{{ route('news.index') }}"
+            class="{{ request()->routeIs('news.*') ? 'bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' }} block rounded-lg px-3 py-2.5 text-base font-medium transition-colors">
+            Berita & Info
+          </a>
         @endif
 
         {{-- MOBILE: MENU PELATIH (GROUPED) --}}
