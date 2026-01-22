@@ -279,55 +279,32 @@
 
       {{-- Bungkus dengan komponen lightbox --}}
       <x-lightbox :images="$welcomeImages">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div class="grid gap-4">
-            <div class="group relative overflow-hidden rounded-xl shadow-lg">
-              <img @click="openLightbox(0)"
-                class="h-auto w-full object-cover transition-transform duration-300 group-hover:scale-105 cursor-pointer"
-                src="{{ asset('img/6.jpg') }}" alt="Galeri Silat 1">
+        <div class="columns-2 md:columns-4 gap-4 space-y-4">
+
+          {{-- Loop langsung data dari Controller --}}
+          @foreach ($welcomeImages as $index => $img)
+            <div class="group relative break-inside-avoid overflow-hidden rounded-2xl shadow-lg cursor-pointer"
+              @click="openLightbox({{ $index }})">
+
+              {{-- Gambar Utama --}}
+              {{-- Perhatikan: Kita pakai asset() di sini karena di controller isinya cuma string path --}}
+              <img class="h-auto w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                src="{{ asset($img['src']) }}" alt="{{ $img['alt'] }}">
+
+              {{-- Overlay Gelap & Ikon saat Hover --}}
+              <div
+                class="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex items-center justify-center">
+                <div class="transform translate-y-4 transition-transform duration-300 group-hover:translate-y-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white drop-shadow-md" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+              </div>
             </div>
-            <div class="group relative overflow-hidden rounded-xl shadow-lg">
-              <img @click="openLightbox(1)"
-                class="h-auto w-full object-cover transition-transform duration-300 group-hover:scale-105 cursor-pointer"
-                src="{{ asset('img/3.jpg') }}" alt="Galeri Silat 2">
-            </div>
-          </div>
-          <div class="grid gap-4">
-            <div class="group relative overflow-hidden rounded-xl shadow-lg">
-              <img @click="openLightbox(2)"
-                class="h-auto w-full object-cover transition-transform duration-300 group-hover:scale-105 cursor-pointer"
-                src="{{ asset('img/4.jpeg') }}" alt="Galeri Silat 3">
-            </div>
-            <div class="group relative overflow-hidden rounded-xl shadow-lg">
-              <img @click="openLightbox(3)"
-                class="h-auto w-full object-cover transition-transform duration-300 group-hover:scale-105 cursor-pointer"
-                src="{{ asset('img/2.jpg') }}" alt="Galeri Silat 4">
-            </div>
-          </div>
-          <div class="grid gap-4">
-            <div class="group relative overflow-hidden rounded-xl shadow-lg">
-              <img @click="openLightbox(4)"
-                class="h-auto w-full object-cover transition-transform duration-300 group-hover:scale-105 cursor-pointer"
-                src="{{ asset('img/7.jpg') }}" alt="Galeri Silat 5">
-            </div>
-            <div class="group relative overflow-hidden rounded-xl shadow-lg">
-              <img @click="openLightbox(5)"
-                class="h-auto w-full object-cover transition-transform duration-300 group-hover:scale-105 cursor-pointer"
-                src="{{ asset('img/8.jpg') }}" alt="Galeri Silat 6">
-            </div>
-          </div>
-          <div class="grid gap-4">
-            <div class="group relative overflow-hidden rounded-xl shadow-lg">
-              <img @click="openLightbox(6)"
-                class="h-auto w-full object-cover transition-transform duration-300 group-hover:scale-105 cursor-pointer"
-                src="{{ asset('img/5.jpg') }}" alt="Galeri Silat 7">
-            </div>
-            <div class="group relative overflow-hidden rounded-xl shadow-lg">
-              <img @click="openLightbox(7)"
-                class="h-auto w-full object-cover transition-transform duration-300 group-hover:scale-105 cursor-pointer"
-                src="{{ asset('img/1.jpg') }}" alt="Galeri Silat 8">
-            </div>
-          </div>
+          @endforeach
+
         </div>
       </x-lightbox>
     </div>

@@ -30,7 +30,7 @@ class WelcomeController extends Controller
                 'title' => 'Ujian Kenaikan Tingkat (UKT) 2024',
                 'date' => '12 Desember 2024',
                 'description' => 'Kegiatan UKT Semester Ganjil yang diikuti oleh 250 peserta dari seluruh ranting di Kabupaten Tasikmalaya.',
-                'thumbnail' => asset('img/6.jpg'),
+                'thumbnail' => asset('img/6.jpeg'),
                 'links' => [
                     'drive' => 'https://drive.google.com/',
                     'instagram' => 'https://instagram.com/',
@@ -41,7 +41,7 @@ class WelcomeController extends Controller
                 'title' => 'Latihan Gabungan Cabang',
                 'date' => '15 Oktober 2024',
                 'description' => 'Latihan bersama untuk mempererat silaturahmi dan penyamaan teknik antar unit latihan.',
-                'thumbnail' => asset('img/3.jpg'),
+                'thumbnail' => asset('img/3.jpeg'),
                 'links' => [
                     'instagram' => 'https://instagram.com/',
                     'tiktok' => 'https://tiktok.com/',
@@ -49,16 +49,17 @@ class WelcomeController extends Controller
             ],
         ];
 
-        // 2. Data Galeri Bawah
+        // 2. Data Galeri Bawah (PERBAIKAN DI SINI)
+        // Kita ubah menjadi array of arrays agar punya key 'src' dan 'alt'
         $welcomeImages = [
-            asset('img/6.jpg'),
-            asset('img/3.jpg'),
-            asset('img/4.jpeg'),
-            asset('img/2.jpg'),
-            asset('img/7.jpg'),
-            asset('img/8.jpg'),
-            asset('img/5.jpg'),
-            asset('img/1.jpg'),
+            ['src' => 'img/6.jpeg', 'alt' => 'Latihan Silat 1'],
+            ['src' => 'img/3.jpeg', 'alt' => 'Latihan Silat 2'],
+            ['src' => 'img/pdcup-xix.jpeg', 'alt' => 'Kejuaraan PD Cup XIX'],
+            ['src' => 'img/pdcup-xx(2).jpeg', 'alt' => 'Kejuaraan PD Cup XX'],
+            ['src' => 'img/7.jpg', 'alt' => 'Kejuaraan PD Cup XIX'],
+            ['src' => 'img/8.jpeg', 'alt' => 'Kejuaraan PD Cup XIX'],
+            ['src' => 'img/5.jpeg', 'alt' => 'Kejuaraan PD Cup XVII'],
+            ['src' => 'img/1.jpeg', 'alt' => 'Dokumentasi'],
         ];
 
         // 3. Data Event Terbaru (INI YANG DIUPDATE DARI CODE ANDA)
