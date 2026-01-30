@@ -14,8 +14,7 @@
         <div class="ml-3">
           <h3 class="text-sm font-medium text-yellow-800">Profil Pelatih Belum Lengkap</h3>
           <div class="mt-2 text-sm text-yellow-700">
-            <p>Halo Pelatih <strong>{{ $user->name }}</strong>. Anda belum menentukan <strong>Unit
-                Latihan</strong>. Silakan lengkapi profil.</p>
+            <p>Halo Coach <strong>{{ $user->name }}</strong>. Untuk dapat mengakses seluruh fitur aplikasi, silahkan lengkapi data profil Anda.</p>
           </div>
           <div class="mt-4">
             <a href="{{ route('profile.edit') }}"
@@ -40,7 +39,7 @@
         <div class="ml-3">
           <h3 class="text-sm font-medium text-yellow-800">Lengkapi Profil Anda</h3>
           <div class="mt-2 text-sm text-yellow-700">
-            <p>Silakan pilih <strong>Unit Latihan</strong> di menu edit profil.</p>
+            <p>Lengkapi <strong>data diri Anda</strong> di menu Edit Profil untuk mengakses seluruh fitur aplikasi.</p>
           </div>
           <div class="mt-4"><a href="{{ route('profile.edit') }}"
               class="text-sm font-medium text-yellow-800 hover:text-yellow-900 hover:underline">Lengkapi
@@ -83,7 +82,7 @@
         <div class="ml-3">
           <h3 class="text-sm font-medium text-blue-800">Menunggu Verifikasi</h3>
           <div class="mt-2 text-sm text-blue-700">
-            <p>Data Anda sedang ditinjau oleh pelatih unit <strong>{{ $unitName }}</strong>.</p>
+            <p>Data Anda sedang ditinjau oleh pelatih ranting <strong>{{ $unitName }}</strong>.</p>
           </div>
         </div>
       </div>
