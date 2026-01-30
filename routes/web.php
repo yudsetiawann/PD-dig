@@ -50,11 +50,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 | mereka akan ditendang ke Home oleh middleware 'verified_member'.
 */
 Route::middleware(['auth', 'verified', 'verified_member'])->group(function () {
-
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
-
     // Event
     Route::get('/events', [EventController::class, 'index'])->name('events.index');
     Route::get('/events/{event:slug}', [EventController::class, 'show'])->name('events.show');
