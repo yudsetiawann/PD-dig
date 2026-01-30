@@ -6,17 +6,16 @@ use Filament\Panel;
 use App\Models\Level;
 use App\Models\UserVerification;
 use Spatie\MediaLibrary\HasMedia;
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\OrganizationPosition;
 use Illuminate\Notifications\Notifiable;
 use Filament\Models\Contracts\FilamentUser;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-// class User extends Authenticatable implements MustVerifyEmail, FilamentUser
-class User extends Authenticatable implements FilamentUser, HasMedia
+class User extends Authenticatable implements MustVerifyEmail, FilamentUser, HasMedia
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, InteractsWithMedia;
