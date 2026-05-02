@@ -21,7 +21,7 @@
 
 ---
 
-## 🎯 Latar Belakang & Transformasi
+## Latar Belakang & Transformasi
 
 Sebelumnya, manajemen organisasi menghadapi tantangan data yang terfragmentasi:
 * **Pendataan Anggota:** Data tersebar di kertas formulir atau file Excel terpisah di setiap ranting, menyebabkan duplikasi dan ketidakvalidan data anggota.
@@ -33,7 +33,7 @@ Bukan sekadar aplikasi tiket, melainkan Platform Manajemen Organisasi (**ERP Sed
 
 ---
 
-## 💎 Fitur Unggulan: Manajemen Keanggotaan (Core System)
+## Fitur Unggulan: Manajemen Keanggotaan (Core System)
 
 Sistem ini memiliki *business logic* yang ketat untuk menjamin validitas data anggota.
 
@@ -44,36 +44,38 @@ Menjamin bahwa hanya anggota yang valid yang tercatat di database.
 * **Approved:** Pelatih memvalidasi bahwa user adalah anggota unitnya. **NIA Terbit Otomatis.**
 * **Rejected:** Data ditolak (wajib menyertakan alasan) untuk diperbaiki user.
 
-### 2. Snapshot Integrity & Locking
+### 2. Snapshot Integrity & Smart Locking
 * **Data Consistency:** Jika anggota yang sudah *Approved* mengubah data sensitif (Nama, Tanggal Lahir, Unit), status otomatis reset ke *Pending* untuk diverifikasi ulang.
+* **Magic Rollback:** Jika user *mengembalikan* data ke kondisi yang identik dengan snapshot terakhir yang disetujui, status otomatis kembali ke *Approved* tanpa perlu re-verifikasi pelatih.
 * **Pre-filled Forms:** Saat mendaftar event, formulir otomatis terisi dari data profil (*Read-Only*). Tidak ada lagi kesalahan penulisan nama di sertifikat.
 
 ### 3. Generator Nomor Induk Anggota (NIA) Otomatis
 Format unik yang digenerate sistem saat status *Approved*:
-* **Format:** `TahunMasuk` + `TglLahir(YYYYMMDD)` + `NoUrut`
-* **Contoh:** `201904050001`
+* **Format:** `TahunMasuk(YYYY)` + `TglLahir(DDMMYYYY)` + `NoUrut(XXXX)`
+* **Contoh:** `2019050420050001` → Anggota masuk 2019, lahir 5 April 2005, urutan ke-1
 
 ---
 
-## 🚀 Fitur Frontend (Publik & Anggota)
+## Fitur Frontend (Publik & Anggota)
 
-Tampilan antarmuka modern dan responsif menggunakan **Tailwind CSS 4**.
+Tampilan antarmuka modern dan responsif menggunakan **Tailwind CSS 4** dengan komponen interaktif berbasis **Livewire**.
 
-### 🏠 Beranda (Homepage) & Informasi
+### Beranda (Homepage) & Informasi
 * **Hero Section:** Navigasi cepat ke Direktori Ranting & Pelatih.
 * **Portal Informasi (Berita):** Pusat edukasi dan publikasi resmi (Materi Edukasi, Info Pertandingan, Berita Event) yang dikelola melalui CMS.
 * **Direktori Anggota & Ranting:** Transparansi data organisasi secara *real-time*.
-* **Event Dashboard:** Menampilkan 3 event terbaru secara dinamis.
+* **Event Dashboard:** Menampilkan 3 event mendatang terdekat secara dinamis.
+* **Arsip Kegiatan:** Dokumentasi kegiatan organisasi lengkap dengan tautan Google Drive, Instagram, dan TikTok.
 
-### 👤 Profil & Dashboard Anggota
+### Profil & Dashboard Anggota
 * **Manajemen Profil:** Input biodata lengkap (NIK, Pekerjaan, Tingkatan, Unit Latihan).
 * **Personalisasi Avatar:** Fitur upload foto profil dengan *real-time preview* berbasis Alpine.js (didukung oleh **Spatie Media Library**).
 * **Tiket Saya:** Riwayat transaksi event, status pembayaran, dan unduh E-Ticket.
-* **Proteksi Akses:** Hanya anggota berstatus *Verified/Approved* yang dapat mengakses menu transaksi dan direktori internal.
+* **Proteksi Akses:** Hanya anggota berstatus *Approved* yang dapat mengakses menu transaksi dan direktori internal.
 
 ---
 
-## 🎫 Manajemen Event & Ticketing
+## Manajemen Event & Ticketing
 
 Sistem pendaftaran event yang terintegrasi penuh dengan data keanggotaan.
 
@@ -81,38 +83,45 @@ Sistem pendaftaran event yang terintegrasi penuh dengan data keanggotaan.
 * **Metode Pembayaran:**
     * **Online (Midtrans Snap):** QRIS, E-Wallet, VA (Otomatis Lunas).
     * **Tunai/Kolektif:** Konfirmasi manual oleh Admin untuk pembayaran via koordinator.
-* **Output Dokumen:** Generate **E-Ticket PDF** dengan QR Code unik dan **Sertifikat Digital** otomatis.
+* **Output Dokumen:**
+    * **E-Ticket PDF** dengan QR Code unik digenerate otomatis setelah pembayaran berhasil dan dikirim ke email.
+    * **Sertifikat Digital** dapat diunduh oleh peserta setelah Admin mempublikasikan sertifikat untuk event tersebut.
 
 ---
 
-## 🛡️ Hak Akses & Panel (Role Management)
+## Hak Akses & Panel (Role Management)
 
-Sistem menggunakan **Filament v4** untuk manajemen panel yang efisien:
+Sistem memiliki empat role dengan antarmuka yang berbeda-beda:
 
-1.  **Panel Admin (Super Admin):**
-    * Manajemen Konten (CMS Berita/Edukasi).
-    * **Master Data Dinamis:** Kelola Unit, Tingkatan, dan Jabatan Organisasi secara fleksibel.
-    * Dashboard Statistik Penjualan & Anggota.
-2.  **Panel Pelatih (Coach Dashboard):**
+1.  **Panel Admin & Scanner — Filament v4 (`/admin`):**
+    * **Admin (Super Admin):**
+        * Manajemen Konten (CMS Berita/Edukasi).
+        * **Master Data Dinamis:** Kelola Unit, Tingkatan, dan Jabatan Organisasi secara fleksibel.
+        * Dashboard Statistik Penjualan & Anggota.
+        * Import data peserta via Excel & Export data transaksi.
+    * **Scanner (Event Crew):**
+        * Validasi QR Code tiket via kamera perangkat untuk presensi event.
+
+2.  **Dashboard Pelatih — Frontend Livewire (`/coach`):**
     * Verifikasi pendaftaran anggota baru di unit masing-masing.
     * Monitoring atlet binaan aktif.
-3.  **Panel Scanner (Event Crew):**
-    * Validasi QR Code tiket via kamera perangkat untuk presensi event.
+    * > **Catatan untuk Kontributor:** Fitur pelatih *tidak* menggunakan Filament. Panel ini dibangun dengan Livewire components di route `/coach/verification` dan `/coach/athletes`.
 
 ---
 
-## 🛠️ Tumpukan Teknologi (Tech Stack)
+## Tumpukan Teknologi (Tech Stack)
 
 | Komponen | Teknologi |
 | :--- | :--- |
 | **Framework** | Laravel 12 |
 | **Language** | PHP 8.3 |
 | **Admin Panel** | FilamentPHP v4 |
-| **Frontend** | Blade + Tailwind CSS 4 + Alpine.js |
+| **Frontend** | Blade + Tailwind CSS 4 + Alpine.js + Livewire |
 | **Database** | MySQL |
 | **Payment Gateway** | Midtrans (Snap) |
 | **Media Management** | Spatie Media Library |
 | **PDF & QR Engine** | DomPDF & Simple-QRCode |
+| **Import / Export** | Maatwebsite Excel |
 
 <p align="center">
   Dibuat dengan ❤️ untuk kemajuan Perisai Diri Kabupaten Tasikmalaya.
