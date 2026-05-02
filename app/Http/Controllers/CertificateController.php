@@ -4,13 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class CertificateController extends Controller
 {
     // Fungsi Helper Terbilang
-    private function terbilang($nilai)
+    private function terbilang(int $nilai): string
     {
         $nilai = abs($nilai);
         $huruf = array("", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas");
@@ -29,10 +28,8 @@ class CertificateController extends Controller
 
     public function download(Order $order)
     {
-        // 1. Validasi Kepemilikan Order
-        if ((int)$order->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('downloadCertificate', $order);
+
 
         Carbon::setLocale('id');
 

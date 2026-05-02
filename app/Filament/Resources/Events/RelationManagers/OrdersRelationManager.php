@@ -4,10 +4,12 @@ namespace App\Filament\Resources\Events\RelationManagers;
 
 use App\Models\Order;
 use App\Models\ExamLevel;
+use App\Mail\SendETicket;
 use Filament\Tables\Table;
 use Filament\Actions\Action;
 use Filament\Schemas\Schema;
 use App\Exports\OrdersExport;
+use Illuminate\Support\Str;
 use Filament\Actions\EditAction;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -22,7 +24,11 @@ use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Columns\TextInputColumn;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Support\Enums\FontWeight; // Jangan lupa import ini
+use Filament\Support\Enums\FontWeight;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class OrdersRelationManager extends RelationManager
 {
@@ -246,14 +252,34 @@ class OrdersRelationManager extends RelationManager
                 ->modalDescription('Pastikan uang sudah diterima. Tiket akan dikirim ke user.')
                 ->visible(fn(Order $record) => $record->status === 'pending')
                 ->action(function (Order $record) {
-                    // 1. Update Status
-                    $record->update(['status' => 'paid']);
+                    $ticketCode = 'TIX-' . strtoupper(Str::random(10));
 
-                    // 2. Generate Tiket (Panggil logika yang sama dengan MidtransController)
-                    // Saran: Pindahkan logika generate PDF+Email ke Service terpisah (misal: TicketService)
-                    // app(TicketService::class)->generateAndSend($record);
+                    DB::transaction(function () use ($record, $ticketCode) {
+                        $record->update([
+                            'status'      => 'paid',
+                            'ticket_code' => $ticketCode,
+                        ]);
 
-                    Notification::make()->title('Pembayaran Dikonfirmasi')->success()->send();
+                        $record->event()->increment('ticket_sold', $record->quantity);
+                        $record->event()->decrement('ticket_quota', $record->quantity);
+                    });
+
+                    try {
+                        $pdf = Pdf::loadView('pdf.eticket', ['order' => $record->fresh()]);
+                        $tempPdfPath = storage_path('app/temp/' . $ticketCode . '.pdf');
+                        $pdf->save($tempPdfPath);
+                        $record->addMedia($tempPdfPath)->toMediaCollection('etickets');
+                    } catch (\Exception $e) {
+                        Log::error('Gagal membuat PDF e-ticket (offline) untuk order ' . $record->order_code . ': ' . $e->getMessage());
+                    }
+
+                    try {
+                        Mail::to($record->user->email)->send(new SendETicket($record));
+                    } catch (\Exception $e) {
+                        Log::error('Gagal mengirim email e-ticket (offline) untuk order ' . $record->order_code . ': ' . $e->getMessage());
+                    }
+
+                    Notification::make()->title('Pembayaran Dikonfirmasi & Tiket Dikirim')->success()->send();
                 }),
                 // EditAction::make()->iconButton(),
                 DeleteAction::make()->iconButton(),

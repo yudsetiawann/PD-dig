@@ -12,18 +12,23 @@ class PublicCoachList extends Component
 {
     use WithPagination;
 
-    public $search = '';
+    public string $search = '';
+
+    public function updatedSearch(): void
+    {
+        $this->resetPage();
+    }
 
     public function render()
     {
         $coaches = User::query()
-            ->where('role', 'coach') // Filter hanya pelatih
-            ->with(['coachedUnits', 'media']) // Eager load relasi unit & foto profil
+            ->coaches()
+            ->with(['coachedUnits', 'media'])
             ->when($this->search, function ($q) {
                 $q->where('name', 'like', '%' . $this->search . '%')
                     ->orWhere('email', 'like', '%' . $this->search . '%');
             })
-            ->orderBy('name', 'asc')
+            ->orderedByName()
             ->paginate(12);
 
         return view('livewire.public-coach-list', [

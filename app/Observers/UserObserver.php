@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class UserObserver
 {
@@ -18,42 +19,42 @@ class UserObserver
     }
 
     /**
-     * Logic Generator NIA yang Aman dari Konflik
+     * Logic Generator NIA yang Aman dari Konflik.
+     * Dibungkus DB::transaction() agar lockForUpdate() efektif di semua konteks,
+     * termasuk saat dipanggil dari luar transaksi (misal: profile update).
+     * Nested transaction dari AthleteVerification::approve() tetap aman via savepoint.
      */
-    private function generateNia(User $user)
+    private function generateNia(User $user): void
     {
-        // Format: YYYY (Join) + DDMMYYYY (TTL) + XXXX (Urut)
-        // Contoh: 2019 + 04052004 + 0001
+        DB::transaction(function () use ($user) {
+            // Format: YYYY (Join) + DDMMYYYY (TTL) + XXXX (Urut)
+            $yearJoined = $user->join_year;
+            $dob        = $user->date_of_birth->format('dmY');
 
-        $yearJoined = $user->join_year;
-        $dob = $user->date_of_birth->format('dmY'); // Format 04052004
-        $prefix = $yearJoined . $dob; // Prefix dasar (tapi urutan reset per tahun masuk)
+            $lastUser = User::where('join_year', $yearJoined)
+                ->whereNotNull('nia')
+                ->orderBy('nia', 'desc')
+                ->lockForUpdate()
+                ->first();
 
-        // KITA GUNAKAN DATABASE TRANSACTION & LOCKING
-        // Untuk mencegah dua orang mendaftar di detik yang sama mendapat nomor sama.
+            $nextSequence = $lastUser
+                ? intval(substr($lastUser->nia, -4)) + 1
+                : 1;
 
-        // 1. Cari user terakhir di TAHUN MASUK yang sama yang sudah punya NIA
-        // Kita kunci baris terakhir agar tidak dibaca process lain sampai ini selesai
-        $lastUser = User::where('join_year', $yearJoined)
-            ->whereNotNull('nia')
-            ->orderBy('nia', 'desc') // Ambil nomor terbesar
-            ->lockForUpdate() // PENTING: Locking
-            ->first();
+            $user->nia = $yearJoined . $dob . str_pad($nextSequence, 4, '0', STR_PAD_LEFT);
+        });
+    }
 
-        if ($lastUser) {
-            // Ambil 4 digit terakhir dari NIA user terakhir
-            $lastSequence = intval(substr($lastUser->nia, -4));
-            $nextSequence = $lastSequence + 1;
-        } else {
-            // Jika belum ada user di tahun masuk tersebut
-            $nextSequence = 1;
+    /**
+     * Handle the User "updating" event.
+     * Terpanggil SEBELUM query UPDATE dikirim ke DB — perubahan pada model otomatis ikut tersimpan.
+     */
+    public function updating(User $user): void
+    {
+        // Reset status verifikasi jika atribut identitas vital berubah
+        if ($user->isDirty(User::VERIFIABLE_ATTRIBUTES)) {
+            $this->handleVerifiableDataChange($user);
         }
-
-        // Format 4 digit angka (0001, 0002, dst)
-        $sequenceStr = str_pad($nextSequence, 4, '0', STR_PAD_LEFT);
-
-        // Set NIA final
-        $user->nia = $yearJoined . $dob . $sequenceStr;
     }
 
     /**
@@ -61,30 +62,20 @@ class UserObserver
      */
     public function updated(User $user): void
     {
-        // Cek apakah NIA masih kosong?
-        // Dan apakah user BARU SAJA melengkapi data yang dibutuhkan (join_year / dob)?
+        // Generate NIA jika user baru melengkapi data yang dibutuhkan
         if (is_null($user->nia) && $user->join_year && $user->date_of_birth) {
-
-            // Generate NIA sekarang
             $this->generateNia($user);
-
-            // Simpan perubahan (tanpa men-trigger event updated lagi agar tidak loop infinite)
             $user->saveQuietly();
         }
 
-        // 1. CEK PERUBAHAN DATA SENSITIF
-        if ($user->isDirty(User::VERIFIABLE_ATTRIBUTES)) {
-            $this->handleVerifiableDataChange($user);
-        }
-
-        // 2. GENERATE NIA (Hanya jika status berubah jadi approved DAN belum punya NIA)
+        // Generate NIA jika status baru saja disetujui dan NIA belum ada
         if (
-            $user->isDirty('verification_status') &&
+            $user->wasChanged('verification_status') &&
             $user->verification_status === 'approved' &&
             is_null($user->nia)
         ) {
-
             $this->generateNia($user);
+            $user->saveQuietly();
         }
     }
 

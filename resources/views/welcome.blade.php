@@ -1,8 +1,6 @@
 <x-app-layout title="Selamat Datang">
   <x-slot name="header">
-    <h1 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-      Selamat Datang
-    </h1>
+    Selamat Datang
   </x-slot>
 
   {{-- ========================================== --}}

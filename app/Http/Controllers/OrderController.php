@@ -71,7 +71,10 @@ class OrderController extends Controller
         try {
             $order = DB::transaction(function () use ($request, $validated, $event, $midtrans, $totalPrice, $quantity, $pricePerTicket, $eventTypeLower, $user, $userLevelName) {
 
-                $orderCode = 'ORD-' . now()->timestamp . '-' . $event->id;
+                // Format: ORD-{timestamp}-{user_id}-{event_id}
+                // Menyertakan user_id memastikan tidak ada kolisi meski dua user
+                // membeli tiket event yang sama dalam detik yang sama.
+                $orderCode = 'ORD-' . now()->timestamp . '-' . $user->id . '-' . $event->id;
 
                 $orderData = [
                     'event_id'      => $event->id,
@@ -155,9 +158,8 @@ class OrderController extends Controller
     public function payCash(Order $order)
     {
         // 1. Validasi Kepemilikan Order
-        if ((int)$order->user_id !== (int)Auth::id()) {
-            abort(403, 'Anda tidak memiliki akses ke pesanan ini.');
-        }
+        $this->authorize('pay', $order);
+
 
         // 2. Cek Status Order (Hanya pending yang bisa diubah)
         if ($order->status !== 'pending') {

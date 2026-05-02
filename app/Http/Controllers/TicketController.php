@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class TicketController extends Controller
@@ -22,10 +21,7 @@ class TicketController extends Controller
     // Menampilkan E-Ticket PDF di browser
     public function show(Order $order)
     {
-        // PERBAIKAN: Tambahkan (int) sebelum $order->user_id
-        if ((int) $order->user_id !== Auth::id() || $order->status !== 'paid' || !$order->ticket_code) {
-            abort(403);
-        }
+        $this->authorize('downloadTicket', $order);
 
         $pdf = Pdf::loadView('pdf.eticket', compact('order'));
         return $pdf->stream('e-ticket-' . $order->ticket_code . '.pdf');
@@ -34,10 +30,7 @@ class TicketController extends Controller
     // Mengunduh E-Ticket PDF
     public function download(Order $order)
     {
-        // PERBAIKAN: Tambahkan (int) sebelum $order->user_id
-        if ((int) $order->user_id !== Auth::id() || $order->status !== 'paid') {
-            abort(403);
-        }
+        $this->authorize('downloadTicket', $order);
 
         $ticketMedia = $order->getFirstMedia('etickets');
         if ($ticketMedia) {
@@ -51,12 +44,9 @@ class TicketController extends Controller
     // Membatalkan order yang masih pending
     public function cancel(Order $order)
     {
-        // PERBAIKAN: Tambahkan (int) sebelum $order->user_id
-        if ((int) $order->user_id !== Auth::id() || $order->status !== 'pending') {
-            abort(403);
-        }
+        $this->authorize('pay', $order);
 
-        $order->delete();
+        $order->update(['status' => 'cancelled']);
         return redirect()->route('my-tickets.index')->with('success', 'Pesanan berhasil dibatalkan.');
     }
 }

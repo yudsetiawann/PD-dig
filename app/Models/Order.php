@@ -37,7 +37,7 @@ class Order extends Model implements HasMedia
 
     protected $casts = [
         'checked_in_at' => 'datetime',
-        'birth_date' => 'date', // <-- Casting agar otomatis jadi object Date
+        'birth_date' => 'date',
     ];
 
     // Relasi ke Event

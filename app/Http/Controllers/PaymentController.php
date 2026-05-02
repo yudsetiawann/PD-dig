@@ -12,9 +12,8 @@ class PaymentController extends Controller
     public function show(Order $order, MidtransService $midtrans)
     {
         // 1. Validasi Akses
-        if ((int)$order->user_id !== (int)auth()->id() || $order->status !== 'pending') {
-            abort(403);
-        }
+        $this->authorize('pay', $order);
+
 
         // 2. CEK APAKAH TOKEN PERLU DI-GENERATE ULANG?
         // Kondisi: Jika token kosong di DB, kita buatkan baru.

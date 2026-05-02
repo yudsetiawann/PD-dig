@@ -149,7 +149,7 @@
 
                 {{-- Tombol Aksi (CTA) --}}
                 <div class="mt-6">
-                  @php $isExpired = $event->starts_at->isPast(); @endphp
+                  @php $isExpired = $event->ends_at->isPast(); @endphp
 
                   @if ($isExpired)
                     {{-- 1. Jika Event sudah lewat --}}

@@ -1,17 +1,13 @@
 <x-app-layout title="Daftar Event">
-  <x-slot name="header">
-    <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-      Temukan Event Menarik
-    </h1>
-  </x-slot>
-
   {{-- Kontainer Utama dengan padding --}}
   <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-
+    <x-slot name="header">
+      Temukan Event Menarik
+  </x-slot>
     {{-- Grid untuk daftar event --}}
     <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
       @forelse ($events as $event)
-        @php $isExpired = $event->starts_at->isPast(); @endphp
+        @php $isExpired = $event->ends_at->isPast(); @endphp
 
         <div @class([
             'flex flex-col overflow-hidden rounded-xl shadow-md transition-all duration-300 group',
@@ -158,7 +154,7 @@
   </div>
 
   {{-- SECTION CARA MEMESAN TIKET (DIPINDAHKAN DARI HOMEPAGE) --}}
-  <section class="py-16 bg-slate-50 dark:bg-slate-950 mt-12 rounded-3xl">
+  <section class="py-16 mt-12 rounded-3xl">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
       <div class="max-w-3xl mx-auto text-center mb-16">
         <h2 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">

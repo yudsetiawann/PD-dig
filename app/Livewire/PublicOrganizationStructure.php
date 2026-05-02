@@ -10,34 +10,9 @@ use Livewire\Attributes\Computed;
 #[Layout('layouts.app')]
 class PublicOrganizationStructure extends Component
 {
-    public $showModal = false;
-    public $selectedMemberId = null;
-
     // 1. Tambahkan properti search
     public $search = '';
 
-    #[Computed]
-    public function selectedMember()
-    {
-        if (!$this->selectedMemberId) {
-            return null;
-        }
-
-        return User::with(['organizationPosition', 'level', 'unit', 'coachedUnits'])
-            ->find($this->selectedMemberId);
-    }
-
-    public function openProfile($userId)
-    {
-        $this->selectedMemberId = $userId;
-        $this->showModal = true;
-    }
-
-    public function closeProfile()
-    {
-        $this->showModal = false;
-        $this->selectedMemberId = null;
-    }
 
     public function render()
     {

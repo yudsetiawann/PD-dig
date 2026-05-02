@@ -2,13 +2,16 @@
 
 namespace App\Providers;
 
+use App\Models\Order;
 use App\Models\User;
 use App\Observers\UserObserver;
-use Illuminate\Support\Facades\URL;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\ServiceProvider;
+use App\Policies\OrderPolicy;
 use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Model::preventLazyLoading();
         User::observe(UserObserver::class);
+        Gate::policy(Order::class, OrderPolicy::class);
 
         // Kustomisasi Bahasa Email Verifikasi
         VerifyEmail::toMailUsing(function (object $notifiable, string $url) {

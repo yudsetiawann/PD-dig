@@ -2,18 +2,19 @@
 
 namespace App\Models;
 
-use Filament\Panel;
 use App\Models\Level;
-use App\Models\UserVerification;
-use Spatie\MediaLibrary\HasMedia;
 use App\Models\OrganizationPosition;
-use Illuminate\Notifications\Notifiable;
+use App\Models\UserVerification;
 use Filament\Models\Contracts\FilamentUser;
-use Spatie\MediaLibrary\InteractsWithMedia;
+use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
 class User extends Authenticatable implements MustVerifyEmail, FilamentUser, HasMedia
 {
@@ -209,6 +210,27 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser, Has
     {
         return $this->role === $role;
     }
+
+    public function scopeAthletes(Builder $query): Builder
+    {
+        return $query->where('role', 'user');
+    }
+
+    public function scopeCoaches(Builder $query): Builder
+    {
+        return $query->where('role', 'coach');
+    }
+
+    public function scopeVerified(Builder $query): Builder
+    {
+        return $query->where('verification_status', 'approved');
+    }
+
+    public function scopeOrderedByName(Builder $query): Builder
+    {
+        return $query->orderBy('name', 'asc');
+    }
+
 
     /**
      * Konfigurasi Spatie Media Library

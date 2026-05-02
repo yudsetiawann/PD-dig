@@ -36,7 +36,7 @@ class AthleteVerification extends Component
         $unitIds = $coach->coachedUnits()->pluck('units.id')->toArray();
 
         return User::query()
-            ->with(['unit', 'level']) // <--- TAMBAHKAN BARIS INI (Solusi)
+            ->with(['unit', 'level'])
             ->where('role', 'user')
             ->whereIn('unit_id', $unitIds)
             ->where('verification_status', 'pending')
@@ -48,11 +48,15 @@ class AthleteVerification extends Component
     {
         $athlete = User::find($userId);
 
-        // Security Check (Unit match)
+        if (! $athlete) {
+            session()->flash('error', 'Atlet tidak ditemukan.');
+            return;
+        }
+
         $coach = Auth::user();
         $coachUnitIds = $coach->coachedUnits->pluck('id')->toArray();
 
-        if (! in_array($athlete->unit_id, $coachUnitIds)) {
+        if (! $athlete->unit_id || ! in_array($athlete->unit_id, $coachUnitIds)) {
             session()->flash('error', 'Akses ditolak.');
             return;
         }
@@ -103,9 +107,14 @@ class AthleteVerification extends Component
 
         $athlete = User::find($this->selectedUserId);
 
-        // SECURITY CHECK (Agar coach tidak menolak atlet unit lain via inspect element)
+        if (! $athlete) {
+            $this->reset(['rejectionNote', 'showRejectModal', 'selectedUserId']);
+            session()->flash('error', 'Atlet tidak ditemukan.');
+            return;
+        }
+
         $coachUnitIds = Auth::user()->coachedUnits->pluck('id')->toArray();
-        if (! in_array($athlete->unit_id, $coachUnitIds)) {
+        if (! $athlete->unit_id || ! in_array($athlete->unit_id, $coachUnitIds)) {
             $this->reset(['rejectionNote', 'showRejectModal', 'selectedUserId']);
             session()->flash('error', 'Anda tidak memiliki hak menolak atlet ini.');
             return;

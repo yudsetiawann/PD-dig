@@ -26,7 +26,7 @@ class SalesStatsOverview extends BaseWidget
 
         // Data User (Atlet & Pelatih)
         $totalAthletes = User::where('role', 'user')->count();
-        $totalCoaches = User::where('role', 'coach')->count();
+        $totalCoaches = User::coaches()->count();
 
         return [
             // 1. Stat Pendapatan

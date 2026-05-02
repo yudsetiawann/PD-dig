@@ -45,10 +45,8 @@ class PublicAthleteList extends Component
     {
         $query = User::query()
             ->with(['unit', 'level'])
-            ->where('role', 'user')
-            ->where('verification_status', 'approved');
+            ->athletes()->verified()->orderedByName();
 
-        // Pengecekan aman menggunakan optional chaining
         if ($this->unit && $this->unit->exists) {
             $query->where('unit_id', $this->unit->id);
         }
@@ -59,8 +57,6 @@ class PublicAthleteList extends Component
                     ->orWhere('nia', 'like', '%' . $this->search . '%');
             });
         }
-
-        $query->orderBy('name');
 
         return view('livewire.public-athlete-list', [
             'athletes' => $query->paginate(12),
