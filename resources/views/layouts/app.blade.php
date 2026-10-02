@@ -15,9 +15,8 @@
     {{-- === 1. TAMBAHKAN BLOCKING SCRIPT DI SINI === --}}
     <script>
         // Skrip ini akan berjalan sebelum halaman dirender
-        if (localStorage.getItem('darkMode') === 'true' ||
-            (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            // Terapkan data-theme="dark" secara instan
+        // Default adalah Light Mode (hanya aktif dark jika user secara eksplisit memilih dark)
+        if (localStorage.getItem('darkMode') === 'true' || localStorage.getItem('theme') === 'dark') {
             document.documentElement.setAttribute('data-theme', 'dark');
         } else {
             document.documentElement.removeAttribute('data-theme');
@@ -33,11 +32,12 @@
 {{-- === 2. PINDAHKAN LOGIKA ALPINE KE BODY === --}}
 
 <body class="h-full font-sans antialiased bg-gray-100 dark:bg-gray-900" x-data="{
-    darkMode: localStorage.getItem('darkMode') === 'true' || (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
+    darkMode: (localStorage.getItem('darkMode') === 'true' || localStorage.getItem('theme') === 'dark'),
     init() {
         // $watch HANYA bertugas mengupdate atribut SAAT DI-TOGGLE
         this.$watch('darkMode', val => {
-            localStorage.setItem('darkMode', val);
+            localStorage.setItem('darkMode', val ? 'true' : 'false');
+            localStorage.setItem('theme', val ? 'dark' : 'light');
             if (val) {
                 document.documentElement.setAttribute('data-theme', 'dark');
             } else {

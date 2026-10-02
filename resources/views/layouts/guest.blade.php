@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full" x-data="themeSwitcher()" x-init="initTheme()">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full" x-data="themeSwitcher()">
 
 <head>
   <meta charset="utf-8">
@@ -21,9 +21,9 @@
   {{-- ⚡️ Tema langsung diterapkan sebelum halaman dirender --}}
   <script>
     (() => {
-      const theme = localStorage.getItem('theme');
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      if (theme === 'dark' || (!theme && prefersDark)) {
+      // Default adalah Light Mode (hanya aktif dark jika user secara eksplisit memilih dark)
+      const isDark = localStorage.getItem('darkMode') === 'true' || localStorage.getItem('theme') === 'dark';
+      if (isDark) {
         document.documentElement.setAttribute('data-theme', 'dark');
       } else {
         document.documentElement.removeAttribute('data-theme');
@@ -40,9 +40,11 @@
           this.darkMode = !this.darkMode;
           if (this.darkMode) {
             document.documentElement.setAttribute('data-theme', 'dark');
+            localStorage.setItem('darkMode', 'true');
             localStorage.setItem('theme', 'dark');
           } else {
             document.documentElement.removeAttribute('data-theme');
+            localStorage.setItem('darkMode', 'false');
             localStorage.setItem('theme', 'light');
           }
         }
