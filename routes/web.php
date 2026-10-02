@@ -97,3 +97,22 @@ Route::middleware(['auth', 'verified', 'verified_member'])->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::post('/midtrans/notification', [MidtransController::class, 'notificationHandler'])->name('midtrans.notification');
+
+Route::get('/storage-link', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('storage:link');
+        $output = \Illuminate\Support\Facades\Artisan::output();
+
+        // Buat symlink juga ke public_html jika hosting menggunakan struktur cPanel
+        $publicHtmlStorage = base_path('../public_html/storage');
+        $target = storage_path('app/public');
+        if (is_dir(base_path('../public_html')) && !file_exists($publicHtmlStorage)) {
+            @symlink($target, $publicHtmlStorage);
+            $output .= " | Symlink public_html/storage berhasil dibuat.";
+        }
+
+        return 'Storage link berhasil diproses: ' . ($output ?: 'Sukses');
+    } catch (\Throwable $e) {
+        return 'Gagal memproses storage link: ' . $e->getMessage();
+    }
+});
